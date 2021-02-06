@@ -8,10 +8,10 @@ int main(void)
 	int hexadecimal;
 
 	cout << "Enter a hexadecimal value: ";
-
 	cin >> hex >> hexadecimal; 
-	cout << "decimal: " << dec << hexadecimal << endl;
-	cout << dec << endl;  
+	
+	bitset<16> binary(hexadecimal);
+	cout << "Binary: " << binary << endl;
 
 	return (0);
 }

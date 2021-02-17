@@ -1,0 +1,56 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+F:/TSI/2nd period/LP/LP-2021/test/Product.cpp
+Product.h
+F:/TSI/2nd period/LP/LP-2021/test/Product.h
+
+F:/TSI/2nd period/LP/LP-2021/test/Product.h
+string
+-
+
+F:/TSI/2nd period/LP/LP-2021/test/ProductList.cpp
+ProductList.h
+F:/TSI/2nd period/LP/LP-2021/test/ProductList.h
+iostream
+-
+
+F:/TSI/2nd period/LP/LP-2021/test/ProductList.h
+vector
+-
+Product.h
+F:/TSI/2nd period/LP/LP-2021/test/Product.h
+
+F:/TSI/2nd period/LP/LP-2021/test/Program.cpp
+Program.h
+F:/TSI/2nd period/LP/LP-2021/test/Program.h
+iostream
+-
+
+F:/TSI/2nd period/LP/LP-2021/test/Program.h
+Stock.h
+F:/TSI/2nd period/LP/LP-2021/test/Stock.h
+string
+-
+
+F:/TSI/2nd period/LP/LP-2021/test/Source.cpp
+iostream
+-
+Program.h
+F:/TSI/2nd period/LP/LP-2021/test/Program.h
+
+F:/TSI/2nd period/LP/LP-2021/test/Stock.cpp
+Stock.h
+F:/TSI/2nd period/LP/LP-2021/test/Stock.h
+
+F:/TSI/2nd period/LP/LP-2021/test/Stock.h
+vector
+-
+Product.h
+F:/TSI/2nd period/LP/LP-2021/test/Product.h
+

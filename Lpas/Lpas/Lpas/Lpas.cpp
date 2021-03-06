@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
 
-	string path = "C:\\Users\\lucas\\Desktop\\New folder\\count1-15";
+	string path = "C:\\Users\\lucas\\Desktop\\New folder\\count1-15(2)";
 
 
 	Programa program;

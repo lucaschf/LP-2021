@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <algorithm>
+#include <string>
+
 #include "Utils.h"
 
 
@@ -56,6 +59,8 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 
 	currentLine = 0;
 
+	cout << "Program " << programa.getNome() << " running....." << endl;
+
 	while (currentLine < programa.getNumeroDeInstrucoes() - 1) {
 		string parameterizedInstruction = programa.obterInstrucao(currentLine);
 
@@ -67,6 +72,9 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 		int instructionBegin = parameterizedInstruction.find(" ");
 		Instruction instruction = static_cast<Instruction>(
 			obterCodigoInstrucao(parameterizedInstruction.substr(0, instructionBegin)));
+
+		if (instruction == HALT)
+			return ErroExecucao();
 
 		auto error = ErroExecucao(
 			parameterizedInstruction,
@@ -89,6 +97,8 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 			int arg = 0;
 
 			for (string strArg : args) {
+				strArg = Utils::trim(strArg);
+		
 				if (isAcceptedVariableName(strArg))
 				{
 					auto it = variables.find(strArg);
@@ -218,7 +228,7 @@ vector<string> MaquinaExecucao::extractArgs(string instructionArgs)
 
 	auto noComments = instructionArgs.substr(0, instructionArgs.find_first_of(";"));
 
-	return Utils::tokenize(noComments, ',');
+	return Utils::tokenize(noComments, ',', true);
 }
 
 bool MaquinaExecucao::isAcceptedVariableName(string arg)
@@ -226,7 +236,7 @@ bool MaquinaExecucao::isAcceptedVariableName(string arg)
 	return !Utils::isInteger(arg);
 }
 
-int MaquinaExecucao::requiredArgs(Instruction instruction)
+size_t MaquinaExecucao::requiredArgs(Instruction instruction)
 {
 	return instruction == Instruction::MOV ? 2 : 1;
 }

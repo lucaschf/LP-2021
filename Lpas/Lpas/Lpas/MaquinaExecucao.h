@@ -121,7 +121,7 @@ private:
 
 	bool isAcceptedVariableName(string arg);
 
-	int requiredArgs(Instruction instruction);
+	rsize_t requiredArgs(Instruction instruction);
 
 };
 #endif

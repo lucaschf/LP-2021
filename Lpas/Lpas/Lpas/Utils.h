@@ -25,7 +25,7 @@ public:
 
 	static bool isInteger(string str);
 
-	static vector<string> tokenize(string const& str, const char delim);
+	static vector<string> tokenize(string const& str, const char delim, bool eraseWhiteSpaces);
 
 	static string trim(string& str);
 };

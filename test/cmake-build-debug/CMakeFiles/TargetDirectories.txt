@@ -1,3 +1,0 @@
-F:/TSI/2nd period/LP/LP-2021/test/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-F:/TSI/2nd period/LP/LP-2021/test/cmake-build-debug/CMakeFiles/test.dir
-F:/TSI/2nd period/LP/LP-2021/test/cmake-build-debug/CMakeFiles/edit_cache.dir

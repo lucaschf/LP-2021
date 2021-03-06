@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+F:/TSI/2nd period/LP/LP-2021/pow_sum/main.c
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+pthread.h
+-
+

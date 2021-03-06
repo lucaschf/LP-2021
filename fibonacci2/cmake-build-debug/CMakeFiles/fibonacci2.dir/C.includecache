@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+F:/TSI/2nd period/LP/LP-2021/fibonacci2/main.c
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+pthread.h
+-
+sys/types.h
+-
+

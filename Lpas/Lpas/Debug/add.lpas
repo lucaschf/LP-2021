@@ -1,0 +1,10 @@
+00 ; -----------------------------------------------------------
+01 ; Lê e soma dois números inteiros, depois exibe o resultado.
+02 ; -----------------------------------------------------------
+03 READ X 
+04 READ Y 
+05 LOAD X 
+06 ADD Y 
+07 STORE Z 
+08 WRITE Z 
+09 HALT  

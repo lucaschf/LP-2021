@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="ArquivoTexto.h" />
     <ClInclude Include="ErroExecucao.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="Lpas.h" />
     <ClInclude Include="MaquinaExecucao.h" />

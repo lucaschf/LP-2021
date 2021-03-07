@@ -37,7 +37,9 @@ private:
 
 	void load(const vector<string>& args);
 
-	Instruction splitInstruction(const string parameterizedInstruction);
+	Instruction extractInstruction(const string parameterizedInstruction);
 
 	LpasOperation getOperationCode(Instruction instruction);
+
+	void showMessage(const string& message, bool breakEndLine = true);
 };

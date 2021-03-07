@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Utils.h"
+#include "Constants.h"
 
 
 MaquinaExecucao::MaquinaExecucao()
@@ -18,9 +19,9 @@ MaquinaExecucao::MaquinaExecucao()
 bool MaquinaExecucao::carregar(Programa programa)
 {
 	if ((numeroDeProgramas >= NUMERO_MAXIMO_DE_PROGRAMAS - 1))
-		throw("Memória da maquina de execução cheia\n");
+		throw(MACHINE_MEMORY_FULL);
 
-	if(pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
+	if (pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
 		return false;
 
 	memoria[numeroDeProgramas++] = programa;
@@ -35,7 +36,7 @@ int MaquinaExecucao::getNumeroDeProgramas()
 unsigned short MaquinaExecucao::pesquisarPrograma(string nome)
 {
 	for (unsigned short i = 0; i < numeroDeProgramas; i++) {
-		if (memoria[i].getNome().compare(nome) == 0)
+		if (memoria[i].getNome().compare(nome) == 0 || memoria[i].getNome().compare(nome + LPAS_EXTENSION) == 0)
 			return i;
 	}
 
@@ -62,13 +63,13 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 
 	if (programa.getNumeroDeInstrucoes() == 0)
 	{
-		cout << "No instructions" << endl;
+		cout << NO_INSTRUCTIONS << endl;
 		return ErroExecucao();
 	}
 
 	currentLine = 0;
 
-	cout << "Program " << programa.getNome() << " running....." << endl;
+	cout << endl << LEFT_MARGIN << PROGRAM << " '" << programa.getNome() << "' " << UP_AND_RUNNING << endl << endl;
 
 	while (currentLine < programa.getNumeroDeInstrucoes() - 1) {
 		string parameterizedInstruction = programa.obterInstrucao(currentLine);
@@ -196,11 +197,11 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 			currentLine = argumento;
 		break;
 	case READ:
-		cout << "value: ";
+		cout << LEFT_MARGIN << VALUE << ": ";
 		cin >> variaveis[enderecoVariavel];
 		break;
 	case WRITE:
-		cout << variaveis[enderecoVariavel] << endl;
+		cout << LEFT_MARGIN << variaveis[enderecoVariavel] << endl;
 		break;
 	case MOV:
 		variaveis[enderecoVariavel] = argumento;
@@ -253,4 +254,3 @@ size_t MaquinaExecucao::requiredArgs(Instruction instruction)
 {
 	return instruction == Instruction::MOV ? 2 : 1;
 }
-

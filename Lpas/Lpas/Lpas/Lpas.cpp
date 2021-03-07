@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Programa.h"
 #include "Utils.h"
+#include "Constants.h"
 
 
 using namespace std;
@@ -19,15 +20,20 @@ void Lpas::run()
 {
 	MaquinaExecucao me = MaquinaExecucao();
 
-	string parameterizedInstruction;
+	string parameterizedInstruction = APP_NAME;
 
 	string instruction;
 	vector<string> args;
 
 	do {
-		cout << "lpas> ";
+		if (!parameterizedInstruction.empty())
+			cout << APP_NAME << "> ";
+
 		getline(cin, parameterizedInstruction);
-		run(splitInstruction(parameterizedInstruction));
+		if (Utils::trim(parameterizedInstruction).empty())
+			continue;
+
+		run(extractInstruction(parameterizedInstruction));
 	} while (parameterizedInstruction.compare("exit") != 0);
 }
 
@@ -53,97 +59,99 @@ void Lpas::run(Instruction instruction)
 		}
 	}
 	catch (const char* msg) {
-		cerr << msg << endl;
+		showMessage(msg);
 		return;
 	}
-
-
 }
 
 void Lpas::show(const vector<string>& args)
 {
 	if (args.size() == 0) {
-		cout << "Parametro ausente \n";
+		showMessage(ABSENT_PARAMETER);
 		return;
 	}
 
 	if (me.getNumeroDeProgramas() == 0)
 	{
-		cout << "Nenhum programa em memória" << endl;
+		showMessage(NO_PROGRAMS_IN_MEMORY);
 		return;
 	}
 
 	if (args.size() == 1 && args[0] == "me") // display all stored
 	{
+		showMessage(THE_LPAS_PROGRAMS_IN_THE_EXECUTION_MACHINE_MEMORY_ARE);
+
 		for (int i = 0; i < me.getNumeroDeProgramas(); i++)
 		{
-			me.obterPrograma(i).exibir();
-			cout << endl;
+			auto message = LEFT_MARGIN + to_string(i + 1) + ": " + me.obterPrograma(i).getNome();
+			showMessage(message, false);
 		}
+
+		cout << endl;
 
 		return;
 	}
 
 	for (auto str : args) {
 		auto pos = me.pesquisarPrograma(str);
-		if (pos == ENDERECO_INVALIDO)
-			pos = me.pesquisarPrograma(str + ".lpas");
 
 		if (pos != ENDERECO_INVALIDO) {
 			me.obterPrograma(pos).exibir();
 			cout << endl;
 		}
 		else
-			cout << "Program - " << str << " not loaded.\n";
+			showMessage(PROGRAM + " '" + str + "' ." + NOT_LOADED);
 	}
 }
 
 void Lpas::run(const vector<string>& args)
 {
 	if (args.size() == 0) {
-		cout << "Parametro ausente \n";
+		showMessage(ABSENT_PARAMETER);
 		return;
 	}
 
 	for (auto str : args) {
 		auto pos = me.pesquisarPrograma(str);
 
-		if (pos == ENDERECO_INVALIDO)
-			pos = me.pesquisarPrograma(str + ".lpas");
-
 		if (pos != ENDERECO_INVALIDO) {
 			me.executarPrograma(pos);
 			cout << endl;
 		}
 		else
-			cout << "Program - " << str << " not loaded.\n";
+			showMessage(PROGRAM + " '" + str + "' ." + NOT_LOADED);
 	}
 }
 
 void Lpas::load(const vector<string>& args)
 {
 	if (args.size() == 0) {
-		cout << "Parametro ausente \n";
+		showMessage(ABSENT_PARAMETER);
 		return;
 	}
 
 	for (auto str : args) {
 		Programa p;
 		try {
-			p.carregar(str);
-			if (me.carregar(p)) {
-				cout << "Programa " << p.getNome() << "carregado com sucesso!" << endl;
+			if (!p.carregar(str)) {
+				showMessage(FILE_ + " '" + str + "' " + NOT_FOUND_OR_NOT_ACCEPTED);
+				return;
 			}
-			else
-				cout << "Já existe um programa com este nome em memória" << endl;
+
+			if (!me.carregar(p)) {
+				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + p.getNome() + "'" + LOADED);
+				return;
+			}
+
+			showMessage(PROGRAM + " '" + p.getNome() + "' " + SUCCESSFUL_LOADED);
 		}
 		catch (const char* msg) {
-			cerr << msg << endl;
+			showMessage(msg);
 		}
 	}
 }
 
-Instruction Lpas::splitInstruction(const string parameterizedInstruction)
+Instruction Lpas::extractInstruction(const string parameterizedInstruction)
 {
 	Instruction instruction;
 
@@ -161,7 +169,15 @@ LpasOperation Lpas::getOperationCode(Instruction instruction) {
 	auto it = operations.find(instruction.getName());
 
 	if (it == operations.end())
-		throw "Ivalid operation";
+		throw INVALID_OPERATION;
 
 	return it->second;
+}
+
+void Lpas::showMessage(const string& message, bool breakEndLine)
+{
+	cout << endl << LEFT_MARGIN << message;
+
+	if (breakEndLine)
+		cout << endl;
 }

@@ -4,6 +4,7 @@
 #include <iomanip>
 #include "ArquivoTexto.h"
 #include "Utils.h"
+#include "Constants.h"
 
 Programa::Programa()
 {
@@ -98,10 +99,10 @@ bool Programa::addInstrucao(string instrucao)
 
 void Programa::exibir()
 {
-	cout << "Programa - " << getNome() << endl;
+	cout << endl << LEFT_MARGIN << "Programa - " << getNome() << endl << endl;
 
 	for (int i = 0; i < numeroDeInstrucoes; i++)
-		cout << setfill('0') << setw(2) << i << " " << instrucoes[i] << endl;
+		cout << LEFT_MARGIN << setfill('0') << setw(2) << i << " " << instrucoes[i] << endl;
 }
 
 void Programa::setNome(string nome)

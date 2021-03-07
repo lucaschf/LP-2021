@@ -52,7 +52,7 @@ public:
 
 private:
 
-	enum Instruction {
+	const enum Instruction {
 		READ = 10,
 		WRITE = 11,
 		MOV = 20,
@@ -99,7 +99,7 @@ private:
 	int registrador;
 
 	// Variáveis do programa LPAS que está sendo executado na máquina de execução.
-	int variaveis[NUMERO_MAXIMO_DE_VARIAVEIS];
+	int variaveis[NUMERO_MAXIMO_DE_VARIAVEIS] = { 0 };
 
 	/* Identifica a instrução, o número da linha, o nome do programa e o tipo de erro que pode
 	ocorrer durante a execução de um programa LPAS.*/

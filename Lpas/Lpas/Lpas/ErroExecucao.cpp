@@ -55,3 +55,34 @@ void ErroExecucao::setErro(Erro erro)
 {
 	this->erro = erro;
 }
+
+string ErroExecucao::getErrorMessage() {
+
+	string message = "Erro na linha " + to_string(getNumeroLinha()) + ": " + getInstrucao() + "\n";
+
+	switch (getErro())
+	{
+	case Erro::EXECUCAO_BEM_SUCEDIDA:
+		message = "Execucao bem sucedida";
+		break;
+	case Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE:
+		message += "Argumento ausente";
+		break;
+	case Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO:
+		message += "Argumento inválido";
+		break;
+	case Erro::INSTRUCAO_LPAS_INVALIDA:
+		message += "Instrução inválida";
+		break;
+	case Erro::MUITAS_INSTRUCOES:
+		message += "Muitas instruçoes em uma unica linha";
+		break;
+	case Erro::SIMBOLO_INVALIDO:
+		message += "Simbolo inválido";
+		break;
+	default:
+		break;
+	}
+
+	return message;
+}

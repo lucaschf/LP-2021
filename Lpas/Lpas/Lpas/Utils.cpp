@@ -75,10 +75,11 @@ vector<string>Utils::tokenize(std::string const& str, const char delim, bool era
 
 	std::string s;
 	while (std::getline(ss, s, delim)) {
-		if(eraseWhiteSpaces)
+		if (eraseWhiteSpaces)
 			s.erase(remove(s.begin(), s.end(), ' '), s.end());
 
-		out.push_back(s);
+		if (!s.empty())
+			out.push_back(s);
 	}
 
 	return out;
@@ -87,6 +88,6 @@ vector<string>Utils::tokenize(std::string const& str, const char delim, bool era
 string Utils::trim(string& str)
 {
 	str.erase(0, str.find_first_not_of(' '));//prefixing spaces
-	str.erase(str.find_last_not_of(' ') + 1);//surfixing spaces
+	str.erase(str.find_last_not_of(' ') + 1);//sufixing spaces
 	return str;
 }

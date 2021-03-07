@@ -17,7 +17,10 @@ MaquinaExecucao::MaquinaExecucao()
 
 bool MaquinaExecucao::carregar(Programa programa)
 {
-	if (numeroDeProgramas >= NUMERO_MAXIMO_DE_PROGRAMAS - 1)
+	if ((numeroDeProgramas >= NUMERO_MAXIMO_DE_PROGRAMAS - 1))
+		throw("Memória da maquina de execução cheia\n");
+
+	if(pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
 		return false;
 
 	memoria[numeroDeProgramas++] = programa;
@@ -36,7 +39,7 @@ unsigned short MaquinaExecucao::pesquisarPrograma(string nome)
 			return i;
 	}
 
-	return -1;
+	return ENDERECO_INVALIDO;
 }
 
 Programa MaquinaExecucao::obterPrograma(unsigned short endereco)
@@ -57,6 +60,12 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 
 	Programa programa = obterPrograma(endereco);
 
+	if (programa.getNumeroDeInstrucoes() == 0)
+	{
+		cout << "No instructions" << endl;
+		return ErroExecucao();
+	}
+
 	currentLine = 0;
 
 	cout << "Program " << programa.getNome() << " running....." << endl;
@@ -64,24 +73,21 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 	while (currentLine < programa.getNumeroDeInstrucoes() - 1) {
 		string parameterizedInstruction = programa.obterInstrucao(currentLine);
 
-		if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) {
+		auto error = ErroExecucao(parameterizedInstruction, programa.getNome(),
+			currentLine, Erro::INSTRUCAO_LPAS_INVALIDA);
+
+		if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) { // is a comment line, nothing to do
 			currentLine++;
 			continue;
 		}
 
 		int instructionBegin = parameterizedInstruction.find(" ");
+
 		Instruction instruction = static_cast<Instruction>(
 			obterCodigoInstrucao(parameterizedInstruction.substr(0, instructionBegin)));
 
 		if (instruction == HALT)
-			return ErroExecucao();
-
-		auto error = ErroExecucao(
-			parameterizedInstruction,
-			programa.getNome(),
-			currentLine,
-			Erro::INSTRUCAO_LPAS_INVALIDA
-		);
+			break;
 
 		if (instructionBegin != string::npos) {
 			auto args = extractArgs(parameterizedInstruction.substr(instructionBegin + 1));
@@ -98,8 +104,8 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 
 			for (string strArg : args) {
 				strArg = Utils::trim(strArg);
-		
-				if (isAcceptedVariableName(strArg))
+
+				if (isAcceptedVariableName(strArg)) // arg is a variable
 				{
 					auto it = variables.find(strArg);
 					if (it == variables.end())
@@ -126,9 +132,9 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 							arg = variaveis[it->second];
 					}
 				}
-				else {
+				else { // arg is a literal
 					try {
-						arg = std::stoi(strArg);
+						arg = stoi(strArg);
 					}
 					catch (...) {
 						error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO);
@@ -137,7 +143,15 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 				}
 			}
 
-			auto result = executarInstrucao(instruction, address, arg);
+			if (executarInstrucao(instruction, address, arg) == USHRT_MAX)
+			{
+				error.setErro(Erro::INSTRUCAO_LPAS_INVALIDA);
+				return error;
+			}
+		}
+		else // no argument given
+		{
+			error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
 		}
 	}
 
@@ -154,13 +168,12 @@ unsigned short MaquinaExecucao::obterCodigoInstrucao(string instrucao)
 	auto it = instructionCodes.find(instrucao);
 
 	if (it == instructionCodes.end())
-		return -1;
+		return USHRT_MAX;
 
 	return it->second;
 }
 
-void MaquinaExecucao::definirErroExecucao(string nomePrograma, string instrucao,
-	unsigned short linha, Erro erro)
+void MaquinaExecucao::definirErroExecucao(string nomePrograma, string instrucao, unsigned short linha, Erro erro)
 {
 	erroExecucao = ErroExecucao(instrucao, nomePrograma, linha, erro);
 }
@@ -183,7 +196,7 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 			currentLine = argumento;
 		break;
 	case READ:
-		cout << "valor: ";
+		cout << "value: ";
 		cin >> variaveis[enderecoVariavel];
 		break;
 	case WRITE:
@@ -214,9 +227,9 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 		registrador = registrador % (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
 		break;
 	case HALT:
-		return codigoInstrucao;
-	default:
 		break;
+	default:
+		return USHRT_MAX;
 	}
 
 	return codigoInstrucao;

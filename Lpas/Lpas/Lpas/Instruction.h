@@ -16,11 +16,15 @@ private:
 
 public:
 	
+	Instruction();
+
 	string getName();
 
 	void setName(string name);
 
 	const vector<string> getArgs();
+
+	void addArgs(vector<string> args);
 
 	void addArg(string arg);
 };

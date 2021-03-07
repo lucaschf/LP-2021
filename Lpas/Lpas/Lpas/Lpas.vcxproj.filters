@@ -30,6 +30,12 @@
     <ClInclude Include="ArquivoTexto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lpas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaquinaExecucao.cpp">
@@ -48,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ArquivoTexto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

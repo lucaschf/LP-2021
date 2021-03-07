@@ -50,6 +50,8 @@ public:
 
 	void setErro(Erro erro);
 
+	string getErrorMessage();
+
 private:
 
 	string instrucao;

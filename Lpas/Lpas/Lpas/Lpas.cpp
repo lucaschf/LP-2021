@@ -1,7 +1,8 @@
 ﻿#include "Lpas.h"
 
-#include "ArquivoTexto.h"
 #include <iostream>
+
+#include "ArquivoTexto.h"
 #include "Programa.h"
 #include "Utils.h"
 #include "Constants.h"
@@ -58,7 +59,7 @@ void Lpas::run(Instruction instruction)
 			break;
 		}
 	}
-	catch (const char* msg) {
+	catch (string msg) {
 		showMessage(msg);
 		return;
 	}
@@ -83,7 +84,7 @@ void Lpas::show(const vector<string>& args)
 
 		for (int i = 0; i < me.getNumeroDeProgramas(); i++)
 		{
-			auto message = LEFT_MARGIN + to_string(i + 1) + ": " + me.obterPrograma(i).getNome();
+			auto message = WHITE_SPACES + to_string(i + 1) + ": " + me.obterPrograma(i).getNome();
 			showMessage(message, false);
 		}
 
@@ -115,11 +116,15 @@ void Lpas::run(const vector<string>& args)
 		auto pos = me.pesquisarPrograma(str);
 
 		if (pos != ENDERECO_INVALIDO) {
-			me.executarPrograma(pos);
-			cout << endl;
+			try {
+				showMessage(me.executarPrograma(pos).getErrorMessage());
+			}
+			catch (string msg) {
+				showMessage(msg);
+			}
 		}
 		else
-			showMessage(PROGRAM + " '" + str + "' ." + NOT_LOADED);
+			showMessage(PROGRAM + " '" + str + "' " + NOT_LOADED);
 	}
 }
 
@@ -145,7 +150,7 @@ void Lpas::load(const vector<string>& args)
 
 			showMessage(PROGRAM + " '" + p.getNome() + "' " + SUCCESSFUL_LOADED);
 		}
-		catch (const char* msg) {
+		catch (string msg) {
 			showMessage(msg);
 		}
 	}
@@ -160,7 +165,14 @@ Instruction Lpas::extractInstruction(const string parameterizedInstruction)
 	instruction.setName(parameterizedInstruction.substr(0, argsBegin));
 
 	if (argsBegin != string::npos)
-		instruction.addArgs(Utils::tokenize(parameterizedInstruction.substr(argsBegin + 1), ' ', true));
+	{
+		char delimiter = ' ';
+		auto args = parameterizedInstruction.substr(argsBegin + 1);
+		if (Utils::contains(args, "\""))
+			delimiter = '"';
+
+		instruction.addArgs(Utils::tokenize(args, delimiter, delimiter == ' '));
+	}
 
 	return instruction;
 }
@@ -176,8 +188,8 @@ LpasOperation Lpas::getOperationCode(Instruction instruction) {
 
 void Lpas::showMessage(const string& message, bool breakEndLine)
 {
-	cout << endl << LEFT_MARGIN << message;
+	cout << endl << WHITE_SPACES << message;
 
 	if (breakEndLine)
-		cout << endl;
+		cout << endl << endl;
 }

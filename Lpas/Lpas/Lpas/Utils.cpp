@@ -91,3 +91,20 @@ string Utils::trim(string& str)
 	str.erase(str.find_last_not_of(' ') + 1);//sufixing spaces
 	return str;
 }
+
+bool Utils::isUppercase(const string& str)
+{
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (!isupper(str[i]))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Utils::contains(string const str, string const s) {
+	return str.find(s) != string::npos;
+}

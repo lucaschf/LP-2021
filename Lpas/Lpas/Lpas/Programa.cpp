@@ -46,14 +46,19 @@ bool Programa::carregar(string filePath)
 	auto fullPath = Utils::addExtensionAsNeeded(filePath, "lpas");
 
 	if (!file.abrir(fullPath, TipoDeAcesso::LEITURA))
-		return false;
+		throw FAILED_TO_OPEN_FILE + " '" + filePath + "'";
 
 	setNome(Utils::getFileName(fullPath, false));
 
 	for (auto str : file.readAllLines()) {
 		int instructionStart = str.find(" ");
+		
+		auto instruction = str.substr(0, instructionStart);
 
-		auto instruction = str.substr(instructionStart + 1);
+		if (Utils::isInteger(instruction)) // has line counter
+			instruction = str.substr(instructionStart + 1);
+		else
+			instruction = Utils::trim(str);
 
 		if (!instruction.empty())
 			if (!addInstrucao(instruction)) {
@@ -66,7 +71,7 @@ bool Programa::carregar(string filePath)
 	return success;
 }
 
-unsigned short Programa::getNumeroDeInstrucoes()
+unsigned short Programa::getNumeroDeInstrucoes()\
 {
 	return numeroDeInstrucoes;
 }
@@ -99,10 +104,10 @@ bool Programa::addInstrucao(string instrucao)
 
 void Programa::exibir()
 {
-	cout << endl << LEFT_MARGIN << "Programa - " << getNome() << endl << endl;
+	cout << endl << WHITE_SPACES << "Programa - " << getNome() << endl << endl;
 
 	for (int i = 0; i < numeroDeInstrucoes; i++)
-		cout << LEFT_MARGIN << setfill('0') << setw(2) << i << " " << instrucoes[i] << endl;
+		cout << WHITE_SPACES << setfill('0') << setw(2) << i << " " << instrucoes[i] << endl;
 }
 
 void Programa::setNome(string nome)

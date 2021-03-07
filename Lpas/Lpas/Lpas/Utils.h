@@ -28,5 +28,9 @@ public:
 	static vector<string> tokenize(string const& str, const char delim, bool eraseWhiteSpaces);
 
 	static string trim(string& str);
+
+	static bool isUppercase(const string& str);
+
+	static bool contains(string const str, string const s);
 };
 #endif // !UTILS_H

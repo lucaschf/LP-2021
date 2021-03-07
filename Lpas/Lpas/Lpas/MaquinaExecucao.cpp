@@ -18,7 +18,7 @@ MaquinaExecucao::MaquinaExecucao()
 
 bool MaquinaExecucao::carregar(Programa programa)
 {
-	if ((numeroDeProgramas >= NUMERO_MAXIMO_DE_PROGRAMAS - 1))
+	if ((numeroDeProgramas >= NUMERO_MAXIMO_DE_PROGRAMAS))
 		throw(MACHINE_MEMORY_FULL);
 
 	if (pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
@@ -53,106 +53,110 @@ Programa MaquinaExecucao::obterPrograma(unsigned short endereco)
 
 ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 {
-	const int maxArgsKnown = 2;
+	const int maxArgsKnown = 2; // number of maximum known arguments for an instruction
 
-	registrador = 0;
 	map<string, int> variables;
 	unsigned short quantidadeVariaveis = 0;
 
 	Programa programa = obterPrograma(endereco);
 
-	if (programa.getNumeroDeInstrucoes() == 0)
+	cout << endl << WHITE_SPACES << PROGRAM << " '" << programa.getNome() << "' " << UP_AND_RUNNING << endl << endl;
+
+	if (programa.getNumeroDeInstrucoes() == 0) // nothing to do
 	{
 		cout << NO_INSTRUCTIONS << endl;
 		return ErroExecucao();
 	}
 
-	currentLine = 0;
+	registrador = 0; // resets the recorder
+	currentLine = 0; // back to the first line of the program
 
-	cout << endl << LEFT_MARGIN << PROGRAM << " '" << programa.getNome() << "' " << UP_AND_RUNNING << endl << endl;
+	while (currentLine < programa.getNumeroDeInstrucoes()) {
+		try {
+			string parameterizedInstruction = programa.obterInstrucao(currentLine);
 
-	while (currentLine < programa.getNumeroDeInstrucoes() - 1) {
-		string parameterizedInstruction = programa.obterInstrucao(currentLine);
+			auto error = ErroExecucao(parameterizedInstruction, programa.getNome(),
+				currentLine, Erro::INSTRUCAO_LPAS_INVALIDA);
 
-		auto error = ErroExecucao(parameterizedInstruction, programa.getNome(),
-			currentLine, Erro::INSTRUCAO_LPAS_INVALIDA);
-
-		if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) { // is a comment line, nothing to do
-			currentLine++;
-			continue;
-		}
-
-		int instructionBegin = parameterizedInstruction.find(" ");
-
-		Instruction instruction = static_cast<Instruction>(
-			obterCodigoInstrucao(parameterizedInstruction.substr(0, instructionBegin)));
-
-		if (instruction == HALT)
-			break;
-
-		if (instructionBegin != string::npos) {
-			auto args = extractArgs(parameterizedInstruction.substr(instructionBegin + 1));
-
-			auto expectedArgs = requiredArgs(instruction);
-
-			if (args.size() != expectedArgs || args.size() > maxArgsKnown) {
-				error.setErro(args.size() > expectedArgs ? Erro::MUITAS_INSTRUCOES : Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
-				return error;
+			if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) { // is a comment line, nothing to do
+				currentLine++;
+				continue;
 			}
 
-			unsigned short address = ENDERECO_INVALIDO;
-			int arg = 0;
+			int argsBegin = parameterizedInstruction.find_first_of(" ");
 
-			for (string strArg : args) {
-				strArg = Utils::trim(strArg);
+			auto instruction = static_cast<Instruction>(obterCodigoInstrucao(parameterizedInstruction.substr(0, argsBegin)));
 
-				if (isAcceptedVariableName(strArg)) // arg is a variable
-				{
-					auto it = variables.find(strArg);
-					if (it == variables.end())
+			if (instruction == HALT)
+				break;
+
+			if (argsBegin != string::npos) { // no args passed
+				auto args = extractArgs(parameterizedInstruction.substr(argsBegin + 1));
+
+				auto expectedArgs = requiredArgs(instruction);
+
+				if (args.size() != expectedArgs || args.size() > maxArgsKnown) {
+					error.setErro(args.size() > expectedArgs ? Erro::MUITAS_INSTRUCOES : Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
+					return error;
+				}
+
+				unsigned short address = ENDERECO_INVALIDO;
+				int arg = 0;
+
+				for (string strArg : args) {
+					strArg = Utils::trim(strArg);
+
+					if (isAcceptedVariableName(strArg)) // arg is a variable
 					{
-						if (variables.size() == NUMERO_MAXIMO_DE_VARIAVEIS)
+						auto it = variables.find(strArg);
+						if (it == variables.end())
 						{
-							error.setErro(Erro::MUITAS_INSTRUCOES);
+							if (variables.size() == NUMERO_MAXIMO_DE_VARIAVEIS)
+							{
+								error.setErro(Erro::MUITAS_INSTRUCOES);
+								return error;
+							}
+
+							variables.insert(make_pair(strArg, quantidadeVariaveis));
+							variaveis[quantidadeVariaveis] = 0;
+							if (address == ENDERECO_INVALIDO)
+								address = quantidadeVariaveis;
+							else
+								arg = quantidadeVariaveis;
+
+							quantidadeVariaveis++;
+						}
+						else {
+							if (address == ENDERECO_INVALIDO)
+								address = it->second;
+							else
+								arg = variaveis[it->second];
+						}
+					}
+					else { // arg is a literal
+						try {
+							arg = stoi(strArg);
+						}
+						catch (...) {
+							error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO);
 							return error;
 						}
-
-						variables.insert(make_pair(strArg, quantidadeVariaveis));
-						variaveis[quantidadeVariaveis] = 0;
-						if (address == ENDERECO_INVALIDO)
-							address = quantidadeVariaveis;
-						else
-							arg = quantidadeVariaveis;
-
-						quantidadeVariaveis++;
-					}
-					else {
-						if (address == ENDERECO_INVALIDO)
-							address = it->second;
-						else
-							arg = variaveis[it->second];
 					}
 				}
-				else { // arg is a literal
-					try {
-						arg = stoi(strArg);
-					}
-					catch (...) {
-						error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO);
-						return error;
-					}
+
+				if (executarInstrucao(instruction, address, arg) == USHRT_MAX)
+				{
+					error.setErro(Erro::INSTRUCAO_LPAS_INVALIDA);
+					return error;
 				}
 			}
-
-			if (executarInstrucao(instruction, address, arg) == USHRT_MAX)
+			else // no argument given
 			{
-				error.setErro(Erro::INSTRUCAO_LPAS_INVALIDA);
-				return error;
+				error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
 			}
 		}
-		else // no argument given
-		{
-			error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
+		catch (...) {
+			throw "Failed to execute instruction at line: " + currentLine;
 		}
 	}
 
@@ -197,11 +201,11 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 			currentLine = argumento;
 		break;
 	case READ:
-		cout << LEFT_MARGIN << VALUE << ": ";
+		cout << WHITE_SPACES << VALUE << ": ";
 		cin >> variaveis[enderecoVariavel];
 		break;
 	case WRITE:
-		cout << LEFT_MARGIN << variaveis[enderecoVariavel] << endl;
+		cout << WHITE_SPACES << variaveis[enderecoVariavel] << endl;
 		break;
 	case MOV:
 		variaveis[enderecoVariavel] = argumento;
@@ -247,7 +251,7 @@ vector<string> MaquinaExecucao::extractArgs(string instructionArgs)
 
 bool MaquinaExecucao::isAcceptedVariableName(string arg)
 {
-	return !Utils::isInteger(arg);
+	return !Utils::isInteger(arg) && Utils::isUppercase(arg);
 }
 
 size_t MaquinaExecucao::requiredArgs(Instruction instruction)

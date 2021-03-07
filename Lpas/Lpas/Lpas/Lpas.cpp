@@ -21,24 +21,21 @@ void Lpas::run()
 {
 	MaquinaExecucao me = MaquinaExecucao();
 
-	string parameterizedInstruction = APP_NAME;
-
-	string instruction;
-	vector<string> args;
+	string parameterizedOperation = APP_NAME;
 
 	do {
-		if (!parameterizedInstruction.empty())
+		if (!parameterizedOperation.empty())
 			cout << APP_NAME << "> ";
 
-		getline(cin, parameterizedInstruction);
-		if (Utils::trim(parameterizedInstruction).empty())
+		getline(cin, parameterizedOperation);
+		if (Utils::trim(parameterizedOperation).empty())
 			continue;
 
-		run(extractInstruction(parameterizedInstruction));
-	} while (parameterizedInstruction.compare("exit") != 0);
+		run(extractOperation(parameterizedOperation));
+	} while (parameterizedOperation.compare("exit") != 0);
 }
 
-void Lpas::run(Instruction instruction)
+void Lpas::run(Operation instruction)
 {
 	LpasOperation operation;
 
@@ -144,7 +141,7 @@ void Lpas::load(const vector<string>& args)
 			}
 
 			if (!me.carregar(p)) {
-				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + p.getNome() + "'" + LOADED);
+				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + p.getNome() + "' " + LOADED);
 				return;
 			}
 
@@ -156,31 +153,31 @@ void Lpas::load(const vector<string>& args)
 	}
 }
 
-Instruction Lpas::extractInstruction(const string parameterizedInstruction)
+Operation Lpas::extractOperation(const string parameterizedOperation)
 {
-	Instruction instruction;
+	Operation operation;
 
-	int argsBegin = parameterizedInstruction.find(" ");
+	int argsBegin = parameterizedOperation.find(" ");
 
-	instruction.setName(parameterizedInstruction.substr(0, argsBegin));
+	operation.setName(parameterizedOperation.substr(0, argsBegin));
 
 	if (argsBegin != string::npos)
 	{
 		char delimiter = ' ';
-		auto args = parameterizedInstruction.substr(argsBegin + 1);
+		auto args = parameterizedOperation.substr(argsBegin + 1);
 		if (Utils::contains(args, "\""))
 			delimiter = '"';
 
-		instruction.addArgs(Utils::tokenize(args, delimiter, delimiter == ' '));
+		operation.addArgs(Utils::tokenize(args, delimiter, delimiter == ' '));
 	}
 
-	return instruction;
+	return operation;
 }
 
-LpasOperation Lpas::getOperationCode(Instruction instruction) {
-	auto it = operations.find(instruction.getName());
+LpasOperation Lpas::getOperationCode(Operation operation) {
+	auto it = operationsMapping.find(operation.getName());
 
-	if (it == operations.end())
+	if (it == operationsMapping.end())
 		throw INVALID_OPERATION;
 
 	return it->second;

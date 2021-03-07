@@ -56,6 +56,10 @@ public:
 	 */
 	string* ler(int numeroLinha);
 
+
+	/*
+	* Reads all file lines and returns as a vector
+	*/
 	vector<string> readAllLines();
 
 	// Fecha o arquivo texto.

@@ -1,4 +1,5 @@
 #include "ErroExecucao.h"
+#include "Constants.h"
 
 ErroExecucao::ErroExecucao()
 {
@@ -58,7 +59,7 @@ void ErroExecucao::setErro(Erro erro)
 
 string ErroExecucao::getErrorMessage() {
 
-	string message = "Erro na linha " + to_string(getNumeroLinha()) + ": " + getInstrucao() + "\n";
+	string message = "Erro na linha " + to_string(getNumeroLinha()) + ": " + getInstrucao() + "\n" + WHITE_SPACES;
 
 	switch (getErro())
 	{

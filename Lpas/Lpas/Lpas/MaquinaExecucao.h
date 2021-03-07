@@ -52,6 +52,7 @@ public:
 
 private:
 
+	// Instruction codes representation
 	const enum Instruction {
 		READ = 10,
 		WRITE = 11,
@@ -69,6 +70,7 @@ private:
 		HALT = 50
 	};
 
+	// Instruction mapping by name
 	const map<string, unsigned short> instructionCodes = {
 		{"READ", READ},
 		{"WRITE", WRITE},
@@ -86,7 +88,6 @@ private:
 		{"HALT", HALT}
 	};
 
-
 	// Número de programas LPAS carregados na memória da máquina de execução.
 	unsigned short numeroDeProgramas;
 
@@ -100,6 +101,12 @@ private:
 
 	// Variáveis do programa LPAS que está sendo executado na máquina de execução.
 	int variaveis[NUMERO_MAXIMO_DE_VARIAVEIS] = { 0 };
+
+	// Execution variables mapping
+	map<string, int> variablesMapping;
+
+	// Counter of allocated variables for execution. 
+	unsigned short allocatedVariables;
 
 	/* Identifica a instrução, o número da linha, o nome do programa e o tipo de erro que pode
 	ocorrer durante a execução de um programa LPAS.*/
@@ -117,11 +124,15 @@ private:
 	por enderecoVariavel. Retorna o código da instrução executada.*/
 	unsigned short executarInstrucao(unsigned short codigoInstrucao, unsigned short enderecoVariavel, int argumento);
 
+	// extracts all arguments from a string and returns as vector
 	vector<string> extractArgs(string instructionArgs);
 
+	Erro retriveVariableAndLiteralFromArgs(Instruction instruction, vector<string> args, unsigned short& address, int& param);
+
+	// checks if a given string can be used as variable name.
 	bool isAcceptedVariableName(string arg);
 
+	// returns the number of required arguments for a specific lpas instruction
 	rsize_t requiredArgs(Instruction instruction);
-
 };
 #endif

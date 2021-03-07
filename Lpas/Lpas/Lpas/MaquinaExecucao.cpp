@@ -53,10 +53,8 @@ Programa MaquinaExecucao::obterPrograma(unsigned short endereco)
 
 ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 {
-	const int maxArgsKnown = 2; // number of maximum known arguments for an instruction
-
-	map<string, int> variables;
-	unsigned short quantidadeVariaveis = 0;
+	variablesMapping.clear();
+	allocatedVariables = 0;
 
 	Programa programa = obterPrograma(endereco);
 
@@ -78,70 +76,40 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 			auto error = ErroExecucao(parameterizedInstruction, programa.getNome(),
 				currentLine, Erro::INSTRUCAO_LPAS_INVALIDA);
 
-			if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) { // is a comment line, nothing to do
+			// check if is a comment line meaning that is nothing to do
+			if (Utils::startsWith(Utils::trim(parameterizedInstruction), ";")) {
 				currentLine++;
 				continue;
 			}
 
 			int argsBegin = parameterizedInstruction.find_first_of(" ");
 
-			auto instruction = static_cast<Instruction>(obterCodigoInstrucao(parameterizedInstruction.substr(0, argsBegin)));
+			if (!Utils::contains(parameterizedInstruction, " ")) // pottentialy a non parameterized instruction
+				argsBegin = parameterizedInstruction.find_first_of(";");
 
-			if (instruction == HALT)
-				break;
+			auto instruction = static_cast<Instruction>(
+				obterCodigoInstrucao(parameterizedInstruction.substr(0, argsBegin)));
 
-			if (argsBegin != string::npos) { // no args passed
-				auto args = extractArgs(parameterizedInstruction.substr(argsBegin + 1));
+			if (instruction == HALT) {
+				error.setErro(Erro::EXECUCAO_BEM_SUCEDIDA);
+				return error;
+			}
 
-				auto expectedArgs = requiredArgs(instruction);
-
-				if (args.size() != expectedArgs || args.size() > maxArgsKnown) {
-					error.setErro(args.size() > expectedArgs ? Erro::MUITAS_INSTRUCOES : Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
-					return error;
-				}
-
+			if (argsBegin != string::npos) { // args passed
 				unsigned short address = ENDERECO_INVALIDO;
 				int arg = 0;
 
-				for (string strArg : args) {
-					strArg = Utils::trim(strArg);
+				auto err = retriveVariableAndLiteralFromArgs(
+					instruction,
+					extractArgs(parameterizedInstruction.substr(argsBegin + 1)),
+					address,
+					arg
+				);
 
-					if (isAcceptedVariableName(strArg)) // arg is a variable
-					{
-						auto it = variables.find(strArg);
-						if (it == variables.end())
-						{
-							if (variables.size() == NUMERO_MAXIMO_DE_VARIAVEIS)
-							{
-								error.setErro(Erro::MUITAS_INSTRUCOES);
-								return error;
-							}
-
-							variables.insert(make_pair(strArg, quantidadeVariaveis));
-							variaveis[quantidadeVariaveis] = 0;
-							if (address == ENDERECO_INVALIDO)
-								address = quantidadeVariaveis;
-							else
-								arg = quantidadeVariaveis;
-
-							quantidadeVariaveis++;
-						}
-						else {
-							if (address == ENDERECO_INVALIDO)
-								address = it->second;
-							else
-								arg = variaveis[it->second];
-						}
-					}
-					else { // arg is a literal
-						try {
-							arg = stoi(strArg);
-						}
-						catch (...) {
-							error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO);
-							return error;
-						}
-					}
+				if (err != Erro::EXECUCAO_BEM_SUCEDIDA)
+				{
+					error.setErro(err);
+					return error;
 				}
 
 				if (executarInstrucao(instruction, address, arg) == USHRT_MAX)
@@ -153,6 +121,7 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 			else // no argument given
 			{
 				error.setErro(Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
+				return error;
 			}
 		}
 		catch (...) {
@@ -161,6 +130,60 @@ ErroExecucao MaquinaExecucao::executarPrograma(unsigned short endereco)
 	}
 
 	return ErroExecucao();
+}
+
+Erro MaquinaExecucao::retriveVariableAndLiteralFromArgs(Instruction instruction, vector<string> args,
+	unsigned short& address, int& param)
+{
+	// number of maximum known arguments for an instruction in this case MOV has the greatest number of args (2)
+	const int maxArgsKnown = 2;
+
+	auto expectedArgs = requiredArgs(instruction);
+
+	if (args.size() != expectedArgs || args.size() > maxArgsKnown) {
+		return (args.size() > expectedArgs ? Erro::MUITAS_INSTRUCOES : Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
+	}
+
+	for (string strArg : args) {
+		strArg = Utils::trim(strArg);
+
+		if (isAcceptedVariableName(strArg)) // arg is a variable
+		{
+			auto it = variablesMapping.find(strArg);
+			if (it == variablesMapping.end())
+			{
+				if (variablesMapping.size() == NUMERO_MAXIMO_DE_VARIAVEIS)
+				{
+					return Erro::MUITAS_INSTRUCOES;
+				}
+
+				variablesMapping.insert(make_pair(strArg, allocatedVariables));
+				variaveis[allocatedVariables] = 0;
+				if (address == ENDERECO_INVALIDO)
+					address = allocatedVariables;
+				else
+					param = allocatedVariables;
+
+				allocatedVariables++;
+			}
+			else {
+				if (address == ENDERECO_INVALIDO)
+					address = it->second;
+				else
+					param = variaveis[it->second];
+			}
+		}
+		else { // arg is a literal
+			try {
+				param = stoi(strArg);
+			}
+			catch (...) {
+				return Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO;
+			}
+		}
+	}
+
+	return Erro::EXECUCAO_BEM_SUCEDIDA;
 }
 
 ErroExecucao MaquinaExecucao::getErroExecucao()
@@ -183,7 +206,8 @@ void MaquinaExecucao::definirErroExecucao(string nomePrograma, string instrucao,
 	erroExecucao = ErroExecucao(instrucao, nomePrograma, linha, erro);
 }
 
-unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao, unsigned short enderecoVariavel, int argumento)
+unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao,
+	unsigned short enderecoVariavel, int argumento)
 {
 	currentLine++;
 

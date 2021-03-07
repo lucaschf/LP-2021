@@ -50,6 +50,7 @@ public:
 
 	void setErro(Erro erro);
 
+	// returns a formatted error message
 	string getErrorMessage();
 
 private:

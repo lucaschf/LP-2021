@@ -143,7 +143,7 @@
     <ClInclude Include="ArquivoTexto.h" />
     <ClInclude Include="ErroExecucao.h" />
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="Instruction.h" />
+    <ClInclude Include="Operation.h" />
     <ClInclude Include="Lpas.h" />
     <ClInclude Include="MaquinaExecucao.h" />
     <ClInclude Include="Programa.h" />
@@ -152,7 +152,7 @@
   <ItemGroup>
     <ClCompile Include="ArquivoTexto.cpp" />
     <ClCompile Include="ErroExecucao.cpp" />
-    <ClCompile Include="Instruction.cpp" />
+    <ClCompile Include="Operation.cpp" />
     <ClCompile Include="Lpas.cpp" />
     <ClCompile Include="MaquinaExecucao.cpp" />
     <ClCompile Include="Programa.cpp" />

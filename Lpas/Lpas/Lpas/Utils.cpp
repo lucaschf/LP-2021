@@ -8,10 +8,10 @@
 namespace fs = std::filesystem;
 
 
-bool Utils::endsWith(const string& str, const string& sufix)
+bool Utils::endsWith(const string& str, const string& suffix)
 {
-	if (str.size() >= sufix.size() &&
-		str.compare(str.size() - sufix.size(), sufix.size(), sufix) == 0)
+	if (str.size() >= suffix.size() &&
+		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0)
 		return true;
 
 	return false;
@@ -20,13 +20,6 @@ bool Utils::endsWith(const string& str, const string& sufix)
 bool Utils::startsWith(const string& str, const string& prefix)
 {
 	return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
-}
-
-string Utils::basename(const string& pathname)
-{
-	return { std::find_if(pathname.rbegin(), pathname.rend(),
-						 [](char c) { return c == '/'; }).base(),
-			pathname.end() };
 }
 
 string Utils::getFileName(const string& filePath, bool withExtension)

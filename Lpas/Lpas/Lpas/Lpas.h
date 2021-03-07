@@ -2,10 +2,11 @@
 #include <string>
 
 #include "MaquinaExecucao.h"
-#include "Instruction.h"
+#include "Operation.h"
 
 using namespace std;
 
+// represents all available operations of lpass
 enum class LpasOperation {
 	LOAD,
 	RUN,
@@ -16,11 +17,13 @@ enum class LpasOperation {
 class Lpas {
 public:
 
+	// start execution
 	void run();
 
 private:
 
-	const map<string, LpasOperation> operations = {
+	// mapping of all available operations
+	const map<string, LpasOperation> operationsMapping = {
 		{"load", LpasOperation::LOAD},
 		{"run", LpasOperation::RUN},
 		{"show", LpasOperation::SHOW},
@@ -29,17 +32,29 @@ private:
 
 	MaquinaExecucao me;
 
-	void run(Instruction instruction);
+	// Performs an operation based on its name and arguments
+	void run(Operation instruction);
 
+	// shows programs in memory
 	void show(const vector<string>& args);
 
+	// run a specific program
 	void run(const vector<string>& args);
 
+	/*
+	* Load all lpas programs into memory based on location passed through args
+	*/
 	void load(const vector<string>& args);
 
-	Instruction extractInstruction(const string parameterizedInstruction);
+	/*
+	* Extract a parameterized operation from a string
+	*/
+	Operation extractOperation(const string parameterizedOperation);
 
-	LpasOperation getOperationCode(Instruction instruction);
+	/*Converts the LPAS operation to its equivalent machine code based on the operationsMapping mapping.
+	Returns the machine code for the LPAS operation.*/
+	LpasOperation getOperationCode(Operation instruction);
 
+	// shows a message in console
 	void showMessage(const string& message, bool breakEndLine = true);
 };

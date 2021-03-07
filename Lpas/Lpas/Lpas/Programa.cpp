@@ -48,7 +48,8 @@ bool Programa::carregar(string filePath)
 	if (!file.abrir(fullPath, TipoDeAcesso::LEITURA))
 		throw FAILED_TO_OPEN_FILE + " '" + filePath + "'";
 
-	setNome(Utils::getFileName(fullPath, false));
+	auto name = Utils::getFileName(fullPath, false);
+	setNome(Utils::trim(name));
 
 	for (auto str : file.readAllLines()) {
 		int instructionStart = str.find(" ");

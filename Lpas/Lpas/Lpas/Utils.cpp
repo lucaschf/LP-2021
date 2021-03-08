@@ -7,7 +7,6 @@
 
 namespace fs = std::filesystem;
 
-
 bool Utils::endsWith(const string& str, const string& suffix)
 {
 	if (str.size() >= suffix.size() &&
@@ -88,7 +87,7 @@ string Utils::trim(string& str)
 
 bool Utils::isUppercase(const string& str)
 {
-	for (int i = 0; i < str.length(); i++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (!isupper(str[i]))
 		{

@@ -17,6 +17,23 @@ constexpr unsigned short NUMERO_MAXIMO_DE_PROGRAMAS = 5;
 // Indica endereço inválido na memória da máquina de execução.
 constexpr unsigned short ENDERECO_INVALIDO = 100;
 
+const enum Instruction {
+	READ = 10,
+	WRITE = 11,
+	MOV = 20,
+	LOAD = 21,
+	STORE = 22,
+	ADD = 30,
+	SUB = 31,
+	MUL = 32,
+	DIV = 33,
+	RDIV = 34,
+	JUMP = 40,
+	JPNEG = 41,
+	JPZERO = 42,
+	HALT = 50
+};
+
 // Esta classe representa a estrutura da máquina de execução de um programa LPAS.
 class MaquinaExecucao {
 
@@ -124,7 +141,7 @@ private:
 	/* Define a instrução, o número da linha, o nome do programa e o erro ocorrido na execução do programa.*/
 	void definirErroExecucao(string nomePrograma, string instrucao, unsigned short linha, Erro erro);
 
-	/* 
+	/*
 	Executa a instrução LPAS usando o valor armazenado em argumento ou na posição de memória indicada
 	por enderecoVariavel. Retorna o código da instrução executada.*/
 	unsigned short executarInstrucao(unsigned short codigoInstrucao, unsigned short enderecoVariavel, int argumento);

@@ -35,7 +35,7 @@ void MaquinaExecucao::replace(string old, Programa programa)
 	if (targetPosition == ENDERECO_INVALIDO)
 		throw PROGRAM + " '" + old + "' " + NOT_LOADED;
 
-	if(pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
+	if (pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
 		throw THERE_IS_ALREADY_A_PROGRAM + " '" + programa.getNome() + "' " + LOADED;
 
 	memoria[targetPosition] = programa;
@@ -255,19 +255,19 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 		variaveis[enderecoVariavel] = registrador;
 		break;
 	case ADD:
-		registrador += (enderecoVariavel != ENDERECO_INVALIDO ? 
+		registrador += (enderecoVariavel != ENDERECO_INVALIDO ?
 			variaveis[enderecoVariavel] : argumento);
 		break;
 	case SUB:
-		registrador -= (enderecoVariavel != ENDERECO_INVALIDO ? 
+		registrador -= (enderecoVariavel != ENDERECO_INVALIDO ?
 			variaveis[enderecoVariavel] : argumento);
 		break;
 	case MUL:
-		registrador *= (enderecoVariavel != ENDERECO_INVALIDO ? 
+		registrador *= (enderecoVariavel != ENDERECO_INVALIDO ?
 			variaveis[enderecoVariavel] : argumento);
 		break;
 	case DIV:
-		registrador /= (enderecoVariavel != ENDERECO_INVALIDO ? 
+		registrador /= (enderecoVariavel != ENDERECO_INVALIDO ?
 			variaveis[enderecoVariavel] : argumento);
 		break;
 	case RDIV:
@@ -297,5 +297,8 @@ bool MaquinaExecucao::isAcceptedVariableName(string arg)
 
 size_t MaquinaExecucao::requiredArgs(Instruction instruction)
 {
+	if (instruction == HALT)
+		return 0;
+
 	return instruction == Instruction::MOV ? 2 : 1;
 }

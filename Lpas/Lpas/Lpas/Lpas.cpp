@@ -76,7 +76,7 @@ void Lpas::show(const vector<string>& args)
 		return;
 	}
 
-	if (args.size() == 1 && args[0] == "me") // display all stored
+	if (args.size() == 1 && args[0] == "me") // display all stored programs
 	{
 		showMessage(THE_LPAS_PROGRAMS_IN_THE_EXECUTION_MACHINE_MEMORY_ARE);
 
@@ -133,21 +133,25 @@ void Lpas::load(const vector<string>& args)
 
 	try {
 		if (args.size() == 0) { // No arguments were received, which means that the user must enter the code manually.
-			showMessage(PROGRAM_NAME, false);
-			string name;
-
-			do {
-				getline(cin, name);
-			} while (name.empty());
-
-			program.setNome(name);
 
 			if (!program.carregar())
 			{
 				showMessage(FAILED_TO_LOAD_PROGRAM);
 				return;
 			}
+			string name;
 
+			do {
+				showMessage(PROGRAM_NAME, false);
+				getline(cin, name);
+				
+				if (me.pesquisarPrograma(name) != ENDERECO_INVALIDO) {
+					showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + name + "' " + LOADED);
+					name = "";
+				}
+			} while (name.empty());
+
+			program.setNome(name);
 			programs.emplace_back(program);
 		}
 		else {
@@ -163,7 +167,7 @@ void Lpas::load(const vector<string>& args)
 			}
 		}
 
-		for (Programa &pr : programs) {
+		for (Programa& pr : programs) {
 			if (!me.carregar(pr)) {
 				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + pr.getNome() + "' " + LOADED);
 				continue;

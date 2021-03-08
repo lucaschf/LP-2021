@@ -64,13 +64,31 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\LP_2020_-_Trabalho_1_LPAS.pdf">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="resources\add.lpas">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\count1-15.lpas">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\LP_2020_-_Trabalho_1_LPAS.pdf">
+    <None Include="resources\div.lpas">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\lpas lpas.lpas">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\mul.lpas">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\sub.lpas">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\test.lpas">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\test2.lpas">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

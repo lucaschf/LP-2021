@@ -1,0 +1,5 @@
+00 MOV X, 1 ;
+01 WRITE X ;
+02 READ Y ;
+03 WRITE
+04 HALT ;

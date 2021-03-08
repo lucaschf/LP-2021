@@ -13,8 +13,8 @@ using namespace std;
 int main() {
 
 	setlocale(LC_ALL, "Portuguese");
-		Lpas().run();
-	
+	Lpas().run();
+
 	return 0;
 }
 
@@ -36,22 +36,22 @@ void Lpas::run()
 	} while (parameterizedOperation.compare("exit") != 0);
 }
 
-void Lpas::run(Operation instruction)
+void Lpas::run(Operation operation)
 {
-	LpasOperation operation;
-
 	try {
-		operation = getOperationCode(instruction);
-		switch (operation)
+		switch (getOperationCode(operation))
 		{
 		case LpasOperation::LOAD:
-			load(instruction.getArgs());
+			load(operation.getArgs());
+			break;
+		case LpasOperation::REPLACE:
+			replace(operation.getArgs());
 			break;
 		case LpasOperation::RUN:
-			run(instruction.getArgs());
+			run(operation.getArgs());
 			break;
 		case LpasOperation::SHOW:
-			show(instruction.getArgs());
+			show(operation.getArgs());
 			break;
 		default:
 			break;
@@ -128,29 +128,74 @@ void Lpas::run(const vector<string>& args)
 
 void Lpas::load(const vector<string>& args)
 {
-	if (args.size() == 0) {
+	Programa program;
+	vector<Programa> programs;
+
+	try {
+		if (args.size() == 0) { // No arguments were received, which means that the user must enter the code manually.
+			showMessage(PROGRAM_NAME, false);
+			string name;
+
+			do {
+				getline(cin, name);
+			} while (name.empty());
+
+			program.setNome(name);
+
+			if (!program.carregar())
+			{
+				showMessage(FAILED_TO_LOAD_PROGRAM);
+				return;
+			}
+
+			programs.emplace_back(program);
+		}
+		else {
+			for (auto str : args) {
+				program = Programa();
+
+				if (!program.carregar(str)) {
+					showMessage(FILE_ + " '" + str + "' " + NOT_FOUND_OR_NOT_ACCEPTED);
+					continue;
+				}
+
+				programs.emplace_back(program);
+			}
+		}
+
+		for (Programa &pr : programs) {
+			if (!me.carregar(pr)) {
+				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + pr.getNome() + "' " + LOADED);
+				continue;
+			}
+
+			showMessage(PROGRAM + " '" + pr.getNome() + "' " + SUCCESSFUL_LOADED);
+		}
+	}
+	catch (string msg) {
+		showMessage(msg);
+	}
+}
+
+void Lpas::replace(const vector<string>& args)
+{
+	if (args.size() != 2) {
 		showMessage(ABSENT_PARAMETER);
 		return;
 	}
 
-	for (auto str : args) {
-		Programa p;
-		try {
-			if (!p.carregar(str)) {
-				showMessage(FILE_ + " '" + str + "' " + NOT_FOUND_OR_NOT_ACCEPTED);
-				return;
-			}
+	Programa p;
+	if (!p.carregar(args[1])) {
+		showMessage(FILE_ + " '" + args[1] + "' " + NOT_FOUND_OR_NOT_ACCEPTED);
+		return;
+	}
 
-			if (!me.carregar(p)) {
-				showMessage(THERE_IS_ALREADY_A_PROGRAM + " '" + p.getNome() + "' " + LOADED);
-				return;
-			}
-
-			showMessage(PROGRAM + " '" + p.getNome() + "' " + SUCCESSFUL_LOADED);
-		}
-		catch (string msg) {
-			showMessage(msg);
-		}
+	try {
+		me.replace(args[0], p);
+		showMessage(PROGRAM + " '" + p.getNome() + "' " + SUCCESSFUL_LOADED);
+	}
+	catch (string message) {
+		showMessage(message);
 	}
 }
 
@@ -169,7 +214,7 @@ Operation Lpas::extractOperation(const string parameterizedOperation)
 		if (Utils::contains(args, "\""))
 			delimiter = '"';
 
-		operation.addArgs(Utils::tokenize(args, delimiter, delimiter == ' '));
+		operation.addArgs(Utils::tokenize(args, delimiter, true));
 	}
 
 	return operation;
@@ -184,7 +229,7 @@ LpasOperation Lpas::getOperationCode(Operation operation) {
 	return it->second;
 }
 
-void Lpas::showMessage(const string& message, bool breakEndLine)
+void Lpas::showMessage(const string message, bool breakEndLine)
 {
 	cout << endl << WHITE_SPACES << message;
 

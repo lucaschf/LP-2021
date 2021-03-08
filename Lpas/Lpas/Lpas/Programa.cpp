@@ -25,7 +25,7 @@ bool Programa::carregar()
 
 	do {
 		fflush(stdin);
-		cout << setfill('0') << setw(2) << numeroDeInstrucoes << " ";
+		cout << WHITE_SPACES << setfill('0') << setw(2) << numeroDeInstrucoes << " ";
 
 		getline(cin, instruction);
 		fflush(stdin);

@@ -28,6 +28,19 @@ bool MaquinaExecucao::carregar(Programa programa)
 	return true;
 }
 
+void MaquinaExecucao::replace(string old, Programa programa)
+{
+	auto targetPosition = pesquisarPrograma(old);
+
+	if (targetPosition == ENDERECO_INVALIDO)
+		throw PROGRAM + " '" + old + "' " + NOT_LOADED;
+
+	if(pesquisarPrograma(programa.getNome()) != ENDERECO_INVALIDO)
+		throw THERE_IS_ALREADY_A_PROGRAM + " '" + programa.getNome() + "' " + LOADED;
+
+	memoria[targetPosition] = programa;
+}
+
 int MaquinaExecucao::getNumeroDeProgramas()
 {
 	return numeroDeProgramas;

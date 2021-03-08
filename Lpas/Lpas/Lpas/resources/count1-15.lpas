@@ -1,100 +1,16 @@
-00 ; -------------------------------------
-01 ; Exibe os números ímpares de 1 a 15.
-02 ; -------------------------------------
-03 MOV X, 1 	; X ? 1
-04 LOAD X 	; registrador ? X
-05 RDIV 2 	; registrador ? X % 2
-06 JPZERO 8	; não exibe o valor de X se é par, ou seja, o resultado de X % 2 é zero.
-07 WRITE X 	; escreve o valor de X no vídeo se X é ímpar, ou seja, o resultado de X % 2 é um.
-08 LOAD X 	; registrador ? X
-09 SUB 15	; registrador ? registrador - 15
-10 JPZERO 15	; finaliza o programa se o valor de X é 15, ou seja, registrador é zero
-11 LOAD X 	; registrador ? X
-12 ADD 1 	; registrador ? X + 1
-13 STORE X  	; X ? registrador
-14 JUMP 5	; loop: desvia para o endereço de memória 5 correspondente a instrução RDIV 2
-15 HALT	        ; finaliza o programa
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+00 ; Programa: contar1a15.lpas
+01 ; DescriÃ§Ã£o: Exibe no vÃ­deo os nÃºmeros Ã­mpares de 1 a 15.
+02 ; ---------------------------------------------------------------------------
+03 MOV X, 1 ; X ïƒ¯ 1
+04 LOAD X ; registrador ïƒ¯ X
+05 RDIV 2 ; registrador ïƒ¯ X % 2
+06 JPZERO 8 ; nÃ£o exibe o valor de X se Ã© par, ou seja, o resultado de X % 2 Ã© zero.
+07 WRITE X ; escreve o valor de X no vÃ­deo se X Ã© Ã­mpar, ou seja, o resultado de X % 2 Ã© um.
+08 LOAD X ; registrador ïƒ¯ X
+09 SUB 15 ; registrador ïƒ¯ registrador - 15
+10 JPZERO 15 ; finaliza o programa se o valor de X Ã© 15, ou seja, registrador Ã© zero
+11 LOAD X ; registrador ïƒ¯ X
+12 ADD 1 ; registrador ïƒ¯ X + 1
+13 STORE X ; X ïƒ¯ registrador
+14 JUMP 5 ; loop: desvia para o endereÃ§o de memÃ³ria 5 correspondente a instruÃ§Ã£o RDIV 2
+15 HALT ; finaliza o programa

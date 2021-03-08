@@ -29,6 +29,11 @@ public:
 	caso contrário retorna false.*/
 	bool carregar(Programa programa);
 
+	/*
+	* Replaces a program in memory with a new program.
+	*/
+	void replace(string old, Programa programa);
+
 	// Obtém o número de programas LPAS carregados na memória da máquina de execução.
 	int getNumeroDeProgramas();
 

@@ -61,15 +61,15 @@ bool Utils::isInteger(string str)
 	}
 }
 
-vector<string>Utils::tokenize(std::string const& str, const char delim, bool eraseWhiteSpaces)
+vector<string>Utils::tokenize(std::string const& str, const char delim, bool trimmed)
 {
 	vector<string> out;
 	std::stringstream ss(str);
 
 	std::string s;
 	while (std::getline(ss, s, delim)) {
-		if (eraseWhiteSpaces)
-			s.erase(remove(s.begin(), s.end(), ' '), s.end());
+		if (trimmed)
+			s = trim(s);
 
 		if (!s.empty())
 			out.push_back(s);

@@ -9,6 +9,7 @@ using namespace std;
 // represents all available operations of lpass
 enum class LpasOperation {
 	LOAD,
+	REPLACE,
 	RUN,
 	SHOW,
 	EXIT
@@ -25,6 +26,7 @@ private:
 	// mapping of all available operations
 	const map<string, LpasOperation> operationsMapping = {
 		{"load", LpasOperation::LOAD},
+		{"replace", LpasOperation::REPLACE},
 		{"run", LpasOperation::RUN},
 		{"show", LpasOperation::SHOW},
 		{"exit", LpasOperation::EXIT}
@@ -46,6 +48,8 @@ private:
 	*/
 	void load(const vector<string>& args);
 
+	void replace(const vector<string>& args);
+
 	/*
 	* Extract a parameterized operation from a string
 	*/
@@ -56,5 +60,5 @@ private:
 	LpasOperation getOperationCode(Operation instruction);
 
 	// shows a message in console
-	void showMessage(const string& message, bool breakEndLine = true);
+	void showMessage(const string message, bool breakEndLine = true);
 };

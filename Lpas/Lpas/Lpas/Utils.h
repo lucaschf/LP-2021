@@ -28,9 +28,9 @@ public:
 	static bool isInteger(string str);
 
 	// split a string into a vector based on a delimiter.
-	static vector<string> tokenize(string const& str, const char delim, bool eraseWhiteSpaces);
+	static vector<string> tokenize(string const& str, const char delim, bool trimmed);
 
-	// removes the leading and trailing spaces in a string
+	// removes the leading and trailing spaces in a string and returns it
 	static string trim(string& str);
 
 	// tests if a string is formed by only uppercase chars

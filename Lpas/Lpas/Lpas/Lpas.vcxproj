@@ -159,6 +159,14 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\add.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\count1-15.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\div.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\lpas lpas.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\mul.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\sub.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\test.lpas" />
+    <None Include="C:\Users\lucas\Desktop\Programas Lpas\test2.lpas" />
     <None Include="resources\add.lpas" />
     <None Include="resources\count1-15.lpas" />
     <None Include="resources\LP_2020_-_Trabalho_1_LPAS.pdf" />

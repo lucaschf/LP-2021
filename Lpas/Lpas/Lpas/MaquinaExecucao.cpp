@@ -140,12 +140,13 @@ Erro MaquinaExecucao::retriveVariableAndLiteralFromArgs(Instruction instruction,
 
 	auto expectedArgs = requiredArgs(instruction);
 
+	// there are too many or too few arguments for an instruction or several instructions on the same line
 	if (args.size() != expectedArgs || args.size() > maxArgsKnown) {
 		return (args.size() > expectedArgs ? Erro::MUITAS_INSTRUCOES : Erro::ARGUMENTO_INSTRUCAO_LPAS_AUSENTE);
 	}
 
-	for (string strArg : args) {
-		strArg = Utils::trim(strArg);
+	for (string argument : args) {
+		auto strArg = Utils::trim(argument);
 
 		if (isAcceptedVariableName(strArg)) // arg is a variable
 		{
@@ -178,7 +179,7 @@ Erro MaquinaExecucao::retriveVariableAndLiteralFromArgs(Instruction instruction,
 				param = stoi(strArg);
 			}
 			catch (...) {
-				return Erro::ARGUMENTO_INSTRUCAO_LPAS_INVALIDO;
+				return Erro::SIMBOLO_INVALIDO;
 			}
 		}
 	}
@@ -241,19 +242,24 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 		variaveis[enderecoVariavel] = registrador;
 		break;
 	case ADD:
-		registrador += (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
+		registrador += (enderecoVariavel != ENDERECO_INVALIDO ? 
+			variaveis[enderecoVariavel] : argumento);
 		break;
 	case SUB:
-		registrador -= (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
+		registrador -= (enderecoVariavel != ENDERECO_INVALIDO ? 
+			variaveis[enderecoVariavel] : argumento);
 		break;
 	case MUL:
-		registrador *= (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
+		registrador *= (enderecoVariavel != ENDERECO_INVALIDO ? 
+			variaveis[enderecoVariavel] : argumento);
 		break;
 	case DIV:
-		registrador /= (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
+		registrador /= (enderecoVariavel != ENDERECO_INVALIDO ? 
+			variaveis[enderecoVariavel] : argumento);
 		break;
 	case RDIV:
-		registrador = registrador % (enderecoVariavel != ENDERECO_INVALIDO ? variaveis[enderecoVariavel] : argumento);
+		registrador = registrador % (enderecoVariavel != ENDERECO_INVALIDO ?
+			variaveis[enderecoVariavel] : argumento);
 		break;
 	case HALT:
 		break;
@@ -266,8 +272,6 @@ unsigned short MaquinaExecucao::executarInstrucao(unsigned short codigoInstrucao
 
 vector<string> MaquinaExecucao::extractArgs(string instructionArgs)
 {
-	vector<string> splitted;
-
 	auto noComments = instructionArgs.substr(0, instructionArgs.find_first_of(";"));
 
 	return Utils::tokenize(noComments, ',', true);

@@ -80,8 +80,9 @@ vector<string>Utils::tokenize(std::string const& str, const char delim, bool era
 
 string Utils::trim(string& str)
 {
-	str.erase(0, str.find_first_not_of(' '));//prefixing spaces
-	str.erase(str.find_last_not_of(' ') + 1);//sufixing spaces
+	const char* typeOfWhitespaces = " \t\n\r\f\v";
+	str.erase(str.find_last_not_of(typeOfWhitespaces) + 1);
+	str.erase(0, str.find_first_not_of(typeOfWhitespaces));
 	return str;
 }
 

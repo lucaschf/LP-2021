@@ -1,10 +1,9 @@
 #ifndef PERSISTENCE_H
 #define PERSISTENCE_H
 
-#include "ArquivoBinario.h"
-
 #include <iostream>
 #include <memory>
+#include "ArquivoBinario.h"
 
 using namespace std;
 
@@ -36,8 +35,8 @@ public:
 	inline vector<T> readAll() {
 		vector<T> all;
 
-		for (auto reg : file->readAll<StructType>()) {
-			all.emplace_back((*(fromStruct(reg))));
+		for (const StructType obj : file->readAll<StructType>()) {
+			all.emplace_back((*(fromStruct(obj))));
 		}
 
 		return all;
@@ -97,6 +96,10 @@ public:
 		}
 
 		return -1;
+	}
+
+	inline void clear() {
+		file->clear();
 	}
 
 	// Exclui o objeto arquivo binario

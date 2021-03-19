@@ -21,6 +21,8 @@ public:
 
 	void setNumeroRegistro(unsigned int numeroRegistro);
 
+	string toString();
+
 private:
 
 	string chavePrimaria; // nome da musica ou artista 

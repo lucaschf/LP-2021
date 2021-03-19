@@ -10,7 +10,8 @@ bool ArquivoBinario::abrir(const string& nomeArquivo) {
 }
 
 void ArquivoBinario::fechar() {
-	if (arquivoBinario.is_open()) arquivoBinario.close();
+	if (arquivoBinario.is_open())
+		arquivoBinario.close();
 }
 
 string ArquivoBinario::getNomeArquivo() {
@@ -25,4 +26,11 @@ unsigned long ArquivoBinario::tamanho() {
 	unsigned long fim = static_cast<unsigned long>(arquivoBinario.tellp());
 
 	return fim - inicio;
+}
+
+void ArquivoBinario::clear()
+{
+	fechar();
+	remove(getNomeArquivo().c_str());
+	abrir(getNomeArquivo());
 }

@@ -36,7 +36,7 @@ public:
 	* Pesquisa o artista de uma música no arquivo. Em caso de sucesso retorna o numero
 	* do registro onde a musica está armazenada e -1 caso contrário.
 	*/
-	int pesquisarArtista(const string& artista);
+	int pesquisarArtista(string *artista);
 
 private:
 

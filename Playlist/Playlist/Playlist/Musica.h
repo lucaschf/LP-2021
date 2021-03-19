@@ -25,9 +25,15 @@ public:
 
 	string toString();
 
+	string displayByArtist();
+
 	static bool compareTitulo(Musica musica, const string& titulo);
 
 	static bool compareArtista(Musica musica, const string& artista);
+
+	static bool compareTitleAndArtist(Musica musica, Musica another);
+
+	static bool compareArtistAndTitle(Musica musica, Musica another);
 
 private:
 

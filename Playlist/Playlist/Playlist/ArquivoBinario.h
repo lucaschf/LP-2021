@@ -160,6 +160,8 @@ public:
 		return false;
 	}
 
+	void clear();
+
 private:
 
 	fstream arquivoBinario; // Arquivo binário para escrita e leitura de dados.

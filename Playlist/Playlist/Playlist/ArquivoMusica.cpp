@@ -18,10 +18,25 @@ int ArquivoMusica::pesquisarTituloMusica(const string& tituloMusica) {
     return find<const string&>(musica, tituloMusica, Musica::compareTitulo);
 }
 
-int ArquivoMusica::pesquisarArtista(const string& artista) {
-    Musica musica;
+int ArquivoMusica::pesquisarArtista(string* artista)
+{
+    static int index;
+    static string strArtista;
 
-    return find<const string&>(musica, artista, Musica::compareArtista);
+    if (artista != nullptr) {
+        index = -1;
+        strArtista = *artista;
+    }
+    
+    Musica *m;
+
+    while ((m = ler(++index)) != nullptr)
+        if (m->getArtista() == strArtista)
+            return index;
+
+    index = -1;
+
+    return index;
 }
 
 StctMusica ArquivoMusica::toStruct(Musica musica) {

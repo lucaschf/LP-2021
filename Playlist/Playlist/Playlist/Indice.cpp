@@ -25,3 +25,8 @@ void Indice::setNumeroRegistro(unsigned int numeroRegistro)
 {
     this->numeroRegistro = numeroRegistro;
 }
+
+string Indice::toString()
+{
+    return to_string(numeroRegistro) + " - " + chavePrimaria  ;
+}

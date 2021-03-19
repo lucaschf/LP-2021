@@ -45,24 +45,31 @@ bool Utils::exists(const string& path)
 	return fs::exists(path);
 }
 
-int Utils::getAllFiles(const string& path, vector<string>& files, const string& extension, bool namesOnly)
+int Utils::getAllFiles(const string& path, vector<string>& files, const string& extension, bool namesOnly, bool withExtension)
 {
 	int counter = 0;
 
-	files.clear();
-
 	if (exists(path)) {
 		for (const auto& entry : fs::directory_iterator(path)) {
-			string s;
+			string s = entry.path().u8string();
 
-			if (namesOnly) {
-				s = getFileName(entry.path().u8string());
+			if (s.length() < path.length()) // pottentialy a parent folder
+				continue;
+
+			if (entry.is_directory()) {
+				counter += getAllFiles(s, files, extension, namesOnly, withExtension);
+				continue;
 			}
-			else
-				s = entry.path().u8string();
 
 			if (StringUtils::endsWithIgnoreCase(s, extension))
 			{
+				if (namesOnly) {
+					s = getFileName(s, withExtension);
+
+					if (findInVector<string>(files, s).first) // there is already a file with this name
+						continue;
+				}
+
 				files.emplace_back(s);
 				counter++;
 			}
@@ -71,3 +78,5 @@ int Utils::getAllFiles(const string& path, vector<string>& files, const string& 
 
 	return counter;
 }
+
+

@@ -34,6 +34,32 @@ public:
 	* @param extension the extension to be listed.
 	* @return the number files of the directory.
 	*/
-	static int getAllFiles(const string& path, vector<string>& files, const string& extension, bool namesOnly = true);
+	static int getAllFiles(const string& path, vector<string>& files, const string& extension, bool namesOnly = true, bool withExtension = true);
+
+
+	/*
+	* Generic function to find an element in vector and also its position.
+	* @return  a pair of bool & int. bool : Represents if element is present in vector or not.
+	* int : Represents the index of element in vector if its found else -1
+	*/
+	template < typename T>
+	static inline std::pair<bool, int> findInVector(const std::vector<T>& vecOfElements, const T& element)
+	{
+		std::pair<bool, int > result;
+		// Find given element in vector
+		auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+		if (it != vecOfElements.end())
+		{
+			result.second = distance(vecOfElements.begin(), it);
+			result.first = true;
+		}
+		else
+		{
+			result.first = false;
+			result.second = -1;
+		}
+
+		return result;
+	}
 };
 #endif // !UTILS_H

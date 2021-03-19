@@ -144,9 +144,11 @@
     <ClInclude Include="ArquivoIndice.h" />
     <ClInclude Include="ArquivoMusica.h" />
     <ClInclude Include="CharSequence.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Indice.h" />
     <ClInclude Include="Musica.h" />
     <ClInclude Include="FilePersistence.h" />
+    <ClInclude Include="Playlist.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

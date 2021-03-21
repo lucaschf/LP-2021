@@ -92,32 +92,6 @@ string StringUtils::toLowerCase(const string& str)
 	return strCopy;
 }
 
-string StringUtils::capitalize(const string& str)
-{
-	if (str.empty())
-		return str;
-
-	string s = toLowerCase(str);
-	s[0] = toupper(s[0]);
-
-	return s;
-}
-
-string StringUtils::capitalizeWords(const string& str)
-{
-	if (str.empty())
-		return str;
-
-	string s = capitalize(str);
-	for (unsigned int i = 1; i < s.size(); i++)
-	{
-		if (s[i - 1] == ' ')
-			s[i] = toupper(s[i]);
-	}
-
-	return s;
-}
-
 int StringUtils::toCharSequence(const string& source, CharSequence destination)
 {
 	return strncpy_s(destination, SEQUENCE_LENGHT, source.c_str(), source.length());
@@ -128,4 +102,21 @@ string StringUtils::trim(string& str){
 	str.erase(str.find_last_not_of(typeOfWhitespaces) + 1);
 	str.erase(0, str.find_first_not_of(typeOfWhitespaces));
 	return str;
+}
+
+vector<string> StringUtils::tokenize(string const& str, const char delim, bool trimmed)
+{
+	vector<string> out;
+	std::stringstream ss(str);
+
+	std::string s;
+	while (std::getline(ss, s, delim)) {
+		if (trimmed)
+			s = StringUtils::trim(s);
+
+		if (!s.empty())
+			out.push_back(s);
+	}
+
+	return out;
 }

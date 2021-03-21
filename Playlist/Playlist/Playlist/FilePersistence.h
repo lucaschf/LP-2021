@@ -2,8 +2,11 @@
 #define PERSISTENCE_H
 
 #include <iostream>
+#include <vector>
 #include <memory>
+#include <algorithm>
 #include "ArquivoBinario.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -35,7 +38,7 @@ public:
 	inline vector<T> readAll() {
 		vector<T> all;
 
-		for (const StructType obj : file->readAll<StructType>()) {
+		for (const StructType& obj : file->readAll<StructType>()) {
 			all.emplace_back((*(fromStruct(obj))));
 		}
 
@@ -84,6 +87,63 @@ public:
 		return -1;
 	}
 
+	/**
+	 * Searches a record in the file.
+	 *
+	 * @tparam Key the search key type.
+	 * @param obj reference of a variable where will be stored the record, if found.
+	 * @param key the pointer to the search key.
+	 * @param comparator pointer to the compare function.
+	 * @return the position in file if found, -1 otherwise.
+	 */
+	template<class Key>
+	int findInSequence(T& obj, Key* key, bool(*comparator)(T, Key)) {
+		static unsigned int index;
+		static Key k;
+
+		if (key != nullptr) {
+			index = 0;
+			k = (*key);
+		}
+
+		for (; index <= numeroRegistros(); index++) {
+			auto result = unique_ptr<T>(ler(index));
+
+			if (result != nullptr && comparator((*result), k)) {
+				obj = (*result);
+				return (int)index++;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Searches a record in the file.
+	 *
+	 * @tparam Key the search key type.
+	 * @param obj reference of a variable where will be stored the record, if found.
+	 * @param key the pointer to the search key.
+	 * @param comparator pointer to the compare function.
+	 * @return the position in file if found, -1 otherwise.
+	 */
+	template<class Key>
+	T* findInSequentially(T& obj, Key* key, bool(*comparator)(T, Key)) {
+		static vector<T> records;
+
+		if (key != nullptr) {
+			records = readAll();
+		}
+	
+		auto r = Utils::findInVectorSequentially(records, key, comparator);
+
+		if (r.first) {
+			return &records.at(r.second);
+		}
+
+		return nullptr;
+	}
+
 	template<class Key, class Key2>
 	int find(T& obj, Key key, Key2 anotherKey, bool (*compare)(T, Key, Key2)) {
 		for (int i = 0; i < numeroRegistros(); i++) {
@@ -104,6 +164,7 @@ public:
 
 	// Exclui o objeto arquivo binario
 	~FilePersistence() {
+		cout << "Deleting file pointer: " << file->getNomeArquivo() << endl;
 		delete file;
 	}
 

@@ -11,6 +11,8 @@ class ArquivoBinario {
 
 public:
 
+	~ArquivoBinario();
+
 	/* Abre o arquivo com o nome especificado em nomeArquivo para escrita e leitura de dados.
 	Se o arquivo nao existir ele sera criado.
 	Retorna true se o arquivo foi aberto com sucesso e false caso contr�rio.
@@ -92,7 +94,7 @@ public:
 		if (count > 0) {
 			arquivoBinario.seekg(0, ios::beg);
 
-			for (unsigned int i = 0; i < count && arquivoBinario.good(); i++)
+			for (unsigned int i = 0; i <= count && arquivoBinario.good(); i++)
 			{
 				if (arquivoBinario.read(reinterpret_cast<char*>(std::addressof(obj)), sizeof(T)))
 					all.emplace_back(obj);

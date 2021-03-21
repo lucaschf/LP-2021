@@ -30,3 +30,8 @@ string Indice::toString()
 {
     return to_string(numeroRegistro) + " - " + chavePrimaria  ;
 }
+
+bool Indice::hasSamePrimaryKey(Indice indice, string chave)
+{
+    return indice.chavePrimaria == chave;
+}

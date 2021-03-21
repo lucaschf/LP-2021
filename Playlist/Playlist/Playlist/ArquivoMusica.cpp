@@ -15,28 +15,15 @@ ArquivoMusica::ArquivoMusica(const string& nomeArquivo) {
 int ArquivoMusica::pesquisarTituloMusica(const string& tituloMusica) {
     Musica musica;
 
-    return find<const string&>(musica, tituloMusica, Musica::compareTitulo);
+    return find<const string&>(musica, tituloMusica, Musica::isSameTitle);
 }
 
 int ArquivoMusica::pesquisarArtista(string* artista)
 {
-    static int index;
-    static string strArtista;
+   /* Musica musica;
+    return findInSequenceBinary<string>(musica, artista, Musica::isSameArtist);*/
 
-    if (artista != nullptr) {
-        index = -1;
-        strArtista = *artista;
-    }
-    
-    Musica *m;
-
-    while ((m = ler(++index)) != nullptr)
-        if (m->getArtista() == strArtista)
-            return index;
-
-    index = -1;
-
-    return index;
+    return 0;
 }
 
 StctMusica ArquivoMusica::toStruct(Musica musica) {

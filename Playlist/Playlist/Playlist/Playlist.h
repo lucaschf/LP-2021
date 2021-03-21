@@ -18,6 +18,8 @@ private :
 	ArquivoIndice arquivoIndiceMusica;
 	ArquivoIndice arquivoIndiceArtista;
 
+	void showTitle(const string& title);
+
 	void createPlaylist();
 
 	void generateIndexes(vector<Indice> music, vector<Indice> artist);
@@ -26,9 +28,13 @@ private :
 
 	vector<Musica> extractMusic(string folderPaht);
 
+	void displayOrdered(string message, bool(*sorted)(Musica, Musica));
+
 	void displayByMusicName();
 
 	void displayByArtist();
+
+	void searchByName();
 
 	void searchByArtist();
 };

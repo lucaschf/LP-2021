@@ -2,6 +2,7 @@
 #define STRING_UTILS_H
 
 #include <string>
+#include <vector>
 #include <sstream>
 
 #include "CharSequence.h"
@@ -110,21 +111,6 @@ public:
 	*/
 	static string toLowerCase(const string& str);
 
-	/**
-	* Retrieves a capitalized version of the string.
-	*
-	* @param str the string to be converted.
-	* @return the converted string;
-	*/
-	static string capitalize(const string& str);
-
-	/**
-	* Retrieves a full capitalized version of the string.
-	*
-	* @param str the string to be converted.
-	* @return the converted string;
-	*/
-	static string capitalizeWords(const string& str);
 
 	/**
 	 * Copies a c ++ string to a c string of predefined length.
@@ -137,6 +123,9 @@ public:
 
 	// removes the leading and trailing spaces in a string and returns it
 	static string trim(string& str);
+
+	// split a string into a vector based on a delimiter.
+	static vector<string> tokenize(string const& str, const char delim, bool trimmed);
 };
 
 #endif //STRING_UTILS_H

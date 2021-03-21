@@ -23,23 +23,6 @@ string Utils::getFileName(const string& filePath, bool withExtension)
 	return "";
 }
 
-vector<string>Utils::tokenize(std::string const& str, const char delim, bool trimmed)
-{
-	vector<string> out;
-	std::stringstream ss(str);
-
-	std::string s;
-	while (std::getline(ss, s, delim)) {
-		if (trimmed)
-			s = StringUtils::trim(s);
-
-		if (!s.empty())
-			out.push_back(s);
-	}
-
-	return out;
-}
-
 bool Utils::exists(const string& path)
 {
 	return fs::exists(path);

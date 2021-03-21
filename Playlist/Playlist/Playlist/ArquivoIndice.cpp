@@ -11,6 +11,18 @@ ArquivoIndice::ArquivoIndice(const string& nomeArquivo)
 	initializeFile(nomeArquivo);
 }
 
+int ArquivoIndice::pesquisarChave(string* chave)
+{
+	Indice indice;
+
+	auto it = findInSequentially<string>(indice, chave, Indice::hasSamePrimaryKey);
+
+	if (it == nullptr)
+		return -1;
+
+	return it->getNumeroRegistro();
+}
+
 StctIndice ArquivoIndice::toStruct(Indice indice)
 {
 	StctIndice stctIndice;
@@ -21,7 +33,7 @@ StctIndice ArquivoIndice::toStruct(Indice indice)
 	return stctIndice;
 }
 
-Indice* ArquivoIndice::fromStruct(const StctIndice &stct)
+Indice* ArquivoIndice::fromStruct(const StctIndice& stct)
 {
 	return new Indice(stct.chavePrimaria, stct.numeroRegistro);
 }

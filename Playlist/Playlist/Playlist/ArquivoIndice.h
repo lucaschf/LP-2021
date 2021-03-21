@@ -20,6 +20,8 @@ public:
 
 	ArquivoIndice(const string& nomeArquivo);
 
+	int pesquisarChave(string* chave);
+
 private:
 
 	 StctIndice toStruct(Indice indice) override;

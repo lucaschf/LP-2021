@@ -1,6 +1,11 @@
 ﻿#include <iostream>
 #include "ArquivoBinario.h"
 
+ArquivoBinario::~ArquivoBinario()
+{
+	fechar();
+}
+
 bool ArquivoBinario::abrir(const string& nomeArquivo) {
 	this->name = nomeArquivo;
 

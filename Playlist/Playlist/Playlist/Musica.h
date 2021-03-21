@@ -9,7 +9,7 @@ class Musica
 {
 public:
 
-	Musica() = default;
+	Musica();
 
 	Musica(string titulo, string artista);
 
@@ -27,19 +27,18 @@ public:
 
 	string displayByArtist();
 
-	static bool compareTitulo(Musica musica, const string& titulo);
+	static bool isSameTitle(Musica musica, const string& titulo);
 
-	static bool compareArtista(Musica musica, const string& artista);
+	static bool isSameArtist(Musica musica, string artista);
 
 	static bool compareTitleAndArtist(Musica musica, Musica another);
 
 	static bool compareArtistAndTitle(Musica musica, Musica another);
 
+	static void resetQuantidadeMusicas();
 private:
 
 	static int quantidadeMusicas;
-
-	static int geradorIndice;
 
 	string titulo;
 

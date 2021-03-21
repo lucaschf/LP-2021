@@ -23,11 +23,13 @@ public:
 
 	string toString();
 
+	static bool hasSamePrimaryKey(Indice indice, string chave);
+
 private:
 
-	string chavePrimaria; // nome da musica ou artista 
+	string chavePrimaria;
 
-	unsigned int numeroRegistro;
+	unsigned int numeroRegistro = 0;
 };
 
 #endif // !INDICE_H

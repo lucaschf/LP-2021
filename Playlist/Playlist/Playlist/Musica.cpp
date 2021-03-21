@@ -1,12 +1,18 @@
 #include "Musica.h"
+#include <filesystem>
 
 int Musica::quantidadeMusicas = 0;
-int Musica::geradorIndice = 0;
+
+Musica::Musica()
+{
+	quantidadeMusicas++;
+}
 
 Musica::Musica(string titulo_, string artista_)
 {
 	setTitulo(std::move(titulo_));
 	setArtista(std::move(artista_));
+	quantidadeMusicas++;
 }
 
 int Musica::getQuantidadeMusicas()
@@ -44,12 +50,12 @@ string Musica::displayByArtist()
 	return  artista + " - " + titulo;
 }
 
-bool Musica::compareTitulo(Musica musica, const string& titulo)
+bool Musica::isSameTitle(Musica musica, const string& titulo)
 {
 	return musica.getTitulo() == titulo;
 }
 
-bool Musica::compareArtista(Musica musica, const string& artista)
+bool Musica::isSameArtist(Musica musica, string artista)
 {
 	return musica.getArtista() == artista;
 }
@@ -68,4 +74,9 @@ bool Musica::compareArtistAndTitle(Musica musica, Musica another)
 
 	return artistResult < 0 || artistResult == 0 &&
 		musica.getTitulo().compare(another.getTitulo()) <= 0;
+}
+
+void Musica::resetQuantidadeMusicas()
+{
+	quantidadeMusicas = 0;
 }

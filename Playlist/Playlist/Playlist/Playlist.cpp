@@ -7,6 +7,7 @@
 #include "Musica.h"
 #include "ArquivoMusica.h"
 #include <algorithm> 
+#include "StringUtils.h"
 
 using namespace std;
 
@@ -22,18 +23,29 @@ PlayList::PlayList()
 	arquivoIndiceMusica.abrir("indiceMusica.dat");
 }
 
+/*
+* Menu da aplicacao
+* 
+* NOTA:  
+* verifiquei em varios lugares e na documentação da linguagem e nao consegui encontrar uma forma de implementar
+* essa pesquisa usando o binary_search, a propria documentacao da linguagem na funcao, sugere que para pegarmos um iterador
+* usemos a funcao std::find ou a uma funcao especializada como pode ver na imagem 'binary_search_info.png' que coloquei no
+* diretorio de recuros(obtive acesso a essa documentacao usando a IDE Clion da jetbrains).
+*/
 int PlayList::menu()
 {
 	string read;
-	char choosen;
+	int choosen;
 
 	do {
+		cout << "Playlist ==============\n\n";
 		cout << "1 - " << CREATE_PLAYLIST << endl;
 		cout << "2 - " << DISPLAY_BY_MUSIC_NAME << endl;
 		cout << "3 - " << DISPLAY_BY_ARTIST << endl;
-		cout << "4 - " << SEARCH_BY_NAME << endl;
+		cout << "4 - " << SEARCH_BY_TITLE << endl;
 		cout << "5 - " << SEARCH_BY_ARTIST << endl;
 		cout << "6 - " << EXIT << endl;
+		cout << "\nOpcao: ";
 
 		getline(cin, read);
 		choosen = atoi(read.c_str());
@@ -49,59 +61,67 @@ int PlayList::menu()
 		case 3:
 			displayByArtist();
 			break;
+		case 4:
+			searchByName();
+			break;
 		case 5:
 			searchByArtist();
 			break;
-		case 7:
-			for (auto i : arquivoIndiceMusica.readAll())
-				cout << i.toString() << endl;
-			break;
 		default:
-			for (auto i : arquivoIndiceArtista.readAll())
-				cout << i.toString() << endl;
 			break;
 		}
 
+		cout << endl;
 	} while (choosen != 6);
 
 	return 0;
 }
 
+void PlayList::showTitle(const string& title)
+{
+	cout << "\n>> " << title << "\n\n";
+}
+
 void PlayList::createPlaylist()
 {
+	showTitle(CREATE_PLAYLIST);
+
 	string path;
 
-	cout << DIRETORY << ": ";
-
+	cout << "\t" << DIRETORY << ": ";
 	getline(cin, path);
 
+	cout << endl;
+
 	if (!Utils::exists(path)) {
-		cout << DIRECTORY_NOT_FOUND << endl;
+		cout << "\t" << DIRECTORY_NOT_FOUND << endl;
 		return;
 	}
 
 	clearFiles();
+	Musica::resetQuantidadeMusicas();
 
 	auto musicFiles = extractMusic(path);
 	vector<Indice> indiceMusicas;
 	vector<Indice> indiceArtistas;
 
 	if (musicFiles.empty()) {
-		cout << NO_SONGS_FOUND << endl;
+		cout << "\t" << NO_SONGS_FOUND << endl;
 		return;
 	}
+	
+	for (unsigned int index = 0; index < musicFiles.size(); index++) {
+		auto m = musicFiles.at(index);
 
-	unsigned int index = 0;
-	for (auto m : musicFiles) {
 		arquivoMusica.escrever(m);
 		indiceArtistas.emplace_back(Indice(m.getArtista(), index));
 		indiceMusicas.emplace_back(Indice(m.getTitulo(), index));
-		index++;
 	}
 
 	generateIndexes(indiceMusicas, indiceArtistas);
 
-	cout << PLAYLIST_CREATED_WITH << " " << musicFiles.size() << " " << MUSIC_S << endl;
+	cout << "\t" << PLAYLIST_CREATED_WITH << " " << Musica::getQuantidadeMusicas() << " " << MUSIC_S << endl;
+	cout << "\t" << INDEX_FILES_CREATED << endl;
 }
 
 void PlayList::generateIndexes(vector<Indice> musicIndices, vector<Indice> artistIndices)
@@ -138,7 +158,8 @@ vector<Musica> PlayList::extractMusic(string folderPaht)
 	if (Utils::getAllFiles(folderPaht, filesInFolder, MPEG_EXTENSION, true, false) > 0)
 	{
 		for (auto& f : filesInFolder) {
-			auto data = Utils::tokenize(f, '-', true);
+			auto data = StringUtils::tokenize(f, '-', true);
+
 			if (data.size() == 2)
 				music.emplace_back(Musica(data[1], data[0]));
 		}
@@ -147,57 +168,84 @@ vector<Musica> PlayList::extractMusic(string folderPaht)
 	return music;
 }
 
-void PlayList::displayByMusicName()
+void PlayList::displayOrdered(string message, bool(*sorted)(Musica, Musica))
 {
 	auto music = arquivoMusica.readAll();
 
-	sort(music.begin(), music.end(), Musica::compareTitleAndArtist);
+	sort(music.begin(), music.end(), sorted);
 
-	cout << PLAYLIST_ORDERED_BY_MUSIC_NAME << endl;
-	cout << NUMBER_OF_MUSIC << music.size() << endl << endl;
+	cout << "\t" << message << endl;
+	cout << "\t" << NUMBER_OF_MUSIC << music.size() << endl << endl;
 
-	for (int i = 0; i < music.size(); i++) {
-		cout << "\t" << i + 1 << ". " << music.at(i).toString() << endl;
+	for (unsigned int i = 0; i < music.size(); i++) {
+		cout << "\t" << i + 1 << ". ";
+
+		if (message == PLAYLIST_ORDERED_BY_ARTIST)
+		{
+			cout << music.at(i).displayByArtist() << endl;
+			continue;
+		}
+
+		cout << music.at(i).toString() << endl;
 	}
+}
+
+void PlayList::displayByMusicName()
+{
+	showTitle(DISPLAY_BY_MUSIC_NAME);
+
+	displayOrdered(PLAYLIST_ORDERED_BY_MUSIC_NAME, Musica::compareTitleAndArtist);
 }
 
 void PlayList::displayByArtist()
 {
-	auto music = arquivoMusica.readAll();
+	showTitle(DISPLAY_BY_ARTIST);
 
-	sort(music.begin(), music.end(), Musica::compareArtistAndTitle);
+	displayOrdered(PLAYLIST_ORDERED_BY_ARTIST, Musica::compareArtistAndTitle);
+}
 
-	cout << PLAYLIST_ORDERED_BY_ARTIST << endl;
-	cout << NUMBER_OF_MUSIC << music.size() << endl << endl;
+void PlayList::searchByName()
+{
+	showTitle(SEARCH_BY_TITLE);
 
-	for (int i = 0; i < music.size(); i++) {
-		cout << "\t" << i + 1 << ". " << music.at(i).displayByArtist() << endl;
+	string title;
+
+	cout << "\t" << TITLE << ": ";
+	getline(cin, title);
+
+	int pos = arquivoMusica.pesquisarTituloMusica(title);
+
+	cout << endl << "\t";
+
+	if (pos == -1)
+	{
+		cout << MUSIC_NOT_FOUND << endl;
+		return;
 	}
+
+	cout << (unique_ptr<Musica>(arquivoMusica.ler(pos)))->toString() << endl;
 }
 
 void PlayList::searchByArtist()
 {
-	/*string name;
+	showTitle(SEARCH_BY_ARTIST);
 
+	string name;
+	cout << "\t" << ARTIST << ": ";
 	getline(cin, name);
 
-	auto pos = arquivoMusica.pesquisarArtista(&name);
+	int pos = arquivoIndiceArtista.pesquisarChave(&name);
+
+	cout << endl;
 
 	if (pos == -1)
 	{
-		cout << ARTIST_NOT_FOUND << endl;
+		cout << "\t" << ARTIST_NOT_FOUND << endl;
 		return;
 	}
 
 	while (pos != -1) {
-		cout << arquivoMusica.ler(pos)->toString() << endl;
-		pos = arquivoMusica.pesquisarArtista(NULL);
-	}*/
-
-
-	string name;
-
-	getline(cin, name);
-
-	arquivoIndiceArtista.pes
+		cout << "\t" << (unique_ptr<Musica>(arquivoMusica.ler(pos)))->displayByArtist() << endl;
+		pos = arquivoIndiceArtista.pesquisarChave(NULL);
+	}
 }

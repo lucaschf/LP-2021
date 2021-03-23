@@ -33,16 +33,8 @@ int Utils::getAllFiles(const string& path, vector<string>& files, const string& 
 	int counter = 0;
 
 	if (exists(path)) {
-		for (const auto& entry : fs::directory_iterator(path)) {
+		for (const auto& entry : fs::recursive_directory_iterator(path)) {
 			string s = entry.path().u8string();
-
-			if (s.length() < path.length()) // pottentialy a parent folder
-				continue;
-
-			if (entry.is_directory()) {
-				counter += getAllFiles(s, files, extension, namesOnly, withExtension);
-				continue;
-			}
 
 			if (StringUtils::endsWithIgnoreCase(s, extension))
 			{

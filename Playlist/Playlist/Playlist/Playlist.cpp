@@ -101,7 +101,7 @@ void PlayList::createPlaylist()
 	clearFiles();
 	Musica::resetQuantidadeMusicas();
 
-	auto musicFiles = extractMusic(path);
+	vector<unique_ptr<Musica>> musicFiles = extractMusic(path);
 	vector<Indice> indiceMusicas;
 	vector<Indice> indiceArtistas;
 
@@ -111,11 +111,11 @@ void PlayList::createPlaylist()
 	}
 	
 	for (unsigned int index = 0; index < musicFiles.size(); index++) {
-		auto m = musicFiles.at(index);
+		auto m = musicFiles.at(index).get();
 
-		arquivoMusica.escrever(m);
-		indiceArtistas.emplace_back(Indice(m.getArtista(), index));
-		indiceMusicas.emplace_back(Indice(m.getTitulo(), index));
+		arquivoMusica.escrever(*m);
+		indiceArtistas.emplace_back(Indice(m->getArtista(), index));
+		indiceMusicas.emplace_back(Indice(m->getTitulo(), index));
 	}
 
 	generateIndexes(indiceMusicas, indiceArtistas);
@@ -150,9 +150,9 @@ void PlayList::clearFiles()
 	arquivoIndiceMusica.clear();
 }
 
-vector<Musica> PlayList::extractMusic(string folderPaht)
+vector<unique_ptr<Musica>> PlayList::extractMusic(string folderPaht)
 {
-	vector<Musica> music;
+	vector<unique_ptr<Musica>> musicFiles;
 	vector<string> filesInFolder;
 
 	if (Utils::getAllFiles(folderPaht, filesInFolder, MPEG_EXTENSION, true, false) > 0)
@@ -161,11 +161,11 @@ vector<Musica> PlayList::extractMusic(string folderPaht)
 			auto data = StringUtils::tokenize(f, '-', true);
 
 			if (data.size() == 2)
-				music.emplace_back(Musica(data[1], data[0]));
+				musicFiles.emplace_back(unique_ptr<Musica>(new Musica(data[1], data[0])));
 		}
 	}
 
-	return music;
+	return musicFiles;
 }
 
 void PlayList::displayOrdered(string message, bool(*sorted)(Musica, Musica))

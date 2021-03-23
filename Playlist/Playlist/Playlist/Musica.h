@@ -36,6 +36,7 @@ public:
 	static bool compareArtistAndTitle(Musica musica, Musica another);
 
 	static void resetQuantidadeMusicas();
+
 private:
 
 	static int quantidadeMusicas;

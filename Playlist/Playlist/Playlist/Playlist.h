@@ -26,7 +26,7 @@ private :
 
 	void clearFiles();
 
-	vector<Musica> extractMusic(string folderPaht);
+	vector<unique_ptr<Musica>> extractMusic(string folderPaht);
 
 	void displayOrdered(string message, bool(*sorted)(Musica, Musica));
 

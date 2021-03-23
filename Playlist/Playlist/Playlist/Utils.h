@@ -74,6 +74,9 @@ public:
 			result.second = -1;
 			k = (*key);
 		}
+		else if (!result.first)
+			return result;
+
 		auto it = std::find_if(vecOfElements.begin() + (result.second + 1), vecOfElements.end(), [compare](const T t) {
 			return compare(t, k);
 			});

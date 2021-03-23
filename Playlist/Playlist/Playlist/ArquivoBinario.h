@@ -90,13 +90,12 @@ public:
 		vector<T> all;
 
 		unsigned int count = countRegisters<T>();
+		arquivoBinario.seekp(0, ios::beg);
 
 		if (count > 0) {
-			arquivoBinario.seekg(0, ios::beg);
-
-			for (unsigned int i = 0; i <= count && arquivoBinario.good(); i++)
+			for (unsigned int i = 0; i <= count; i++)
 			{
-				if (arquivoBinario.read(reinterpret_cast<char*>(std::addressof(obj)), sizeof(T)))
+				if (read(obj, i))
 					all.emplace_back(obj);
 			}
 		}

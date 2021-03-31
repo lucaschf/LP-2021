@@ -4,6 +4,7 @@ Periodo::Periodo()
 {
 	first = time(NULL);
 	second = time(NULL);
+	this->second += 24 * 3600; // forces second date to be ahead one day 
 
 	calculateDiff();
 }
@@ -12,6 +13,7 @@ Periodo::Periodo(time_t start, time_t end)
 {
 	this->first = start;
 	this->second = end;
+	this->second += 24 * 3600; // forces second date to be ahead one day 
 
 	calculateDiff();
 }
@@ -20,21 +22,22 @@ Periodo::Periodo(tm first, tm second)
 {
 	this->first = mktime(&first);
 	this->second = mktime(&second);
+	this->second += 24 * 3600; // forces second date to be ahead one day 
 
 	calculateDiff();
 }
 
-long int Periodo::getYears()
+short Periodo::getYears()
 {
 	return this->years;
 }
 
-long int Periodo::getMonths()
+short Periodo::getMonths()
 {
 	return this->months;
 }
 
-long int Periodo::getWorkingDays()
+short Periodo::getWorkingDays()
 {
 	return this->workingDays;
 }
@@ -55,7 +58,7 @@ void Periodo::calculateDiff()
 
 	auto seconds = difftime(second, first);
 
-	this->months = (long int)seconds / t;
+	this->months = (int)(seconds / t);
 	this->years = getMonths() / 12;
 	this->workingDays = getMonths() * 21;
 }

@@ -32,11 +32,11 @@ Investimento::Investimento(
 	setTaxa(taxa);
 	setDataInvestimento(dataInvestimento);
 	setDataResgate(dataResgate);
-	type = type;
+	this->type = type;
 
 	intervaloInvestimento = Periodo(
-		StringUtils::toTime(dataInvestimento, 0),
-		StringUtils::toTime(dataResgate, 1)
+		StringUtils::toTime(dataInvestimento),
+		StringUtils::toTime(dataResgate)
 	);
 
 	setPrazo(intervaloInvestimento.getWorkingDays());
@@ -171,25 +171,30 @@ string Investimento::toSring()
 
 float Investimento::calcularIR()
 {
-	return (getAliquota() / 100) * getRendaBrutaCumulativa();
+	return (float)((getAliquota() / 100) * getRendaBrutaCumulativa());
 }
 
-float Investimento::getTaxaMensal()
+double Investimento::getTaxaMensal()
 {
-	return pow((1 + 11 / 100.0), (1.0 / 12.0)) - 1;
+	return pow((1 + getTaxa() / 100.0), (1.0 / 12.0)) - 1;
 }
 
-float Investimento::calculaValorRendimentoBruto()
+double Investimento::calculaValorRendimentoBruto()
 {
 	return getValorInvestido() * pow(1 + getTaxaMensal(), getPrazoEmMeses());
 }
 
-float Investimento::getRendaBrutaCumulativa()
+double Investimento::getRendaBrutaCumulativa()
 {
 	return calculaValorRendimentoBruto() - getValorInvestido();
 }
 
-float Investimento::calculaValorLiquidoCumulativo()
+double Investimento::getRendaLiquidaCumulativa()
+{
+	return calculaValorLiquidoCumulativo() - getValorInvestido();
+}
+
+double Investimento::calculaValorLiquidoCumulativo()
 {
 	return calculaValorRendimentoBruto() - calcularIR();
 }

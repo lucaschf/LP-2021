@@ -37,7 +37,7 @@ RendaVariavel::RendaVariavel(
 
 string RendaVariavel::toSring()
 {
-	return Investimento::toSring();
+	return Investimento::toSring() + " | " + to_string(getPrazo()) + " dias";
 }
 
 short RendaVariavel::getPrazo()

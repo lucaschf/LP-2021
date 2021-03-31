@@ -129,6 +129,11 @@ double StringUtils::toDouble(const string source)
 	return atof(s.c_str());
 }
 
+float StringUtils::toFloat(const string source)
+{
+	return (float)toDouble(source);
+}
+
 int StringUtils::toInt(const string source)
 {
 	string s = source;
@@ -139,7 +144,7 @@ int StringUtils::toInt(const string source)
 	return atoi(s.c_str());
 }
 
-struct tm StringUtils::toTime(const string& source, int hora)
+struct tm StringUtils::toTime(const string& source)
 {
 	struct tm tm;
 	time_t rawtime;
@@ -158,14 +163,14 @@ struct tm StringUtils::toTime(const string& source, int hora)
 	tm.tm_year = year - 1900;
 	tm.tm_mon = month - 1;
 	tm.tm_mday = day;
-	tm.tm_hour = hora;
+	tm.tm_hour = 0;
 	tm.tm_min = 0;
 	tm.tm_sec = 0;
 
-	if(tm.tm_year < 0 || tm.tm_mon < 0 || tm.tm_mday < 0)
+	if(tm.tm_year < 0 || tm.tm_mon < 0 || tm.tm_mday < 1)
 		throw string("Data inválida");
 
-	//mktime(&tm);
+	mktime(&tm);
 
 	return tm;
 }

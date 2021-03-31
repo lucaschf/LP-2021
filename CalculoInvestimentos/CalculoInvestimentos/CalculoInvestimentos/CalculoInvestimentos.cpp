@@ -13,15 +13,15 @@ void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 	if (!arq.abrir(caminhoArquivo, TipoDeAcesso::LEITURA))
 		throw INCAPAZ_DE_ABRIR_ARQUIVO;
 
-	auto data = arq.readAll();
+	auto data = arq.readAll(".UTF8");
 	arq.fechar();
 
 	if (data.empty())
 		throw ARQUIVO_DE_DADOS_VAZIO;
 
-	for (int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) {
 		auto line = data.at(i);
-
+	
 		auto tokens = StringUtils::tokenize(line, ';', true);
 		if (tokens.size() != 9) {
 			clearInvestimentos();
@@ -35,15 +35,15 @@ void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 				tokens.at(3), // rating
 				StringUtils::equalsIgnoreCase(tokens.at(4), "sim"), // fgc
 				Estrategia::from(tokens.at(1)), // estrategia
-				StringUtils::toDouble(tokens.at(5)), // valor investido
-				StringUtils::toDouble(tokens.at(6)), // taxa
+				StringUtils::toFloat(tokens.at(5)), // valor investido
+				StringUtils::toFloat(tokens.at(6)), // taxa
 				tokens.at(7), // data investimento
 				tokens.at(8) // data resgate
 			);
 
 			// força uma validacao das datas.
-			StringUtils::toTime(i->getDataInvestimento(), 0);
-			StringUtils::toTime(i->getDataResgate(), 1);
+			StringUtils::toTime(i->getDataInvestimento());
+			StringUtils::toTime(i->getDataResgate());
 
 			investimentos.emplace_back(i);
 		}
@@ -80,17 +80,19 @@ vector<string> CalculoInvestimentos::relatorioPorTipoInvestimento()
 
 	for (auto investiment : investimentos) {
 		report.emplace_back("- " + investiment->toSring());
-		report.emplace_back("\n\nValor investido:\tR$ " + StringUtils::toStringWithPrecision(investiment->getValorInvestido()));
-		report.emplace_back("\nTaxa ao ano:\t" + StringUtils::toStringWithPrecision(investiment->getTaxa()) +"% a.a.");
-		report.emplace_back("\nTaxa ao mês:\t" + StringUtils::toStringWithPrecision(investiment->getTaxaMensal() * 100.0) + "% a.m.");
-		report.emplace_back("\nData do investimento:\t" + investiment->getDataInvestimento());
-		report.emplace_back("\nData de resgate:\t" + investiment->getDataResgate());
-		report.emplace_back("\nValor bruto:\t" + StringUtils::toStringWithPrecision(investiment->calculaValorRendimentoBruto()));
-		report.emplace_back("\nValor líquido:\t" + StringUtils::toStringWithPrecision(investiment->calculaValorLiquidoCumulativo()));
-		report.emplace_back("\nAliquota de IR:\t" + StringUtils::toStringWithPrecision(investiment->getAliquota()) + "%");
-		report.emplace_back("\nValor do IR:\t" + StringUtils::toStringWithPrecision(investiment->calcularIR()));
-		report.emplace_back("\n\n");
+		report.emplace_back("Valor investido:\tR$ " + StringUtils::toStringWithPrecision(investiment->getValorInvestido()));
+		report.emplace_back("Taxa ao ano:\t" + StringUtils::toStringWithPrecision(investiment->getTaxa()) +"% a.a.");
+		report.emplace_back("Taxa ao mês:\t" + StringUtils::toStringWithPrecision(investiment->getTaxaMensal() * 100.0) + "% a.m.");
+		report.emplace_back("Data do investimento:\t" + investiment->getDataInvestimento());
+		report.emplace_back("Data de resgate:\t" + investiment->getDataResgate());
+		report.emplace_back("Valor bruto:\tR$ " + StringUtils::toStringWithPrecision(investiment->calculaValorRendimentoBruto()));
+		report.emplace_back("Valor líquido:\tR$ " + StringUtils::toStringWithPrecision(investiment->calculaValorLiquidoCumulativo()));
+		report.emplace_back("Aliquota de IR:\t" + StringUtils::toStringWithPrecision(investiment->getAliquota()) + "%");
+		report.emplace_back("Valor do IR:\tR$ " + StringUtils::toStringWithPrecision(investiment->calcularIR()));
+		report.emplace_back("Rendimento bruto:\tR$ " + StringUtils::toStringWithPrecision(investiment->getRendaBrutaCumulativa()));
+		report.emplace_back("Rendimento líquido:\tR$ " + StringUtils::toStringWithPrecision(investiment->getRendaLiquidaCumulativa()));
 
+		report.emplace_back("\n\n");
 	}
 
 	return report;

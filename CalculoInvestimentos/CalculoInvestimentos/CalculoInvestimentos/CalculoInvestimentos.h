@@ -14,7 +14,6 @@ public:
 
 	~CalculoInvestimentos();
 
-
 	vector<string> relatorioPorTipoInvestimento();
 
 private:

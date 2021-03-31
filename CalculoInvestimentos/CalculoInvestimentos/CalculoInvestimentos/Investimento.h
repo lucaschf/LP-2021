@@ -85,13 +85,15 @@ public:
 	// Calcula o valor do Imposto de Renda (IR) sobre o rendimento obtido no investimento.
 	virtual float calcularIR();
 
-	float getTaxaMensal();
+	double getTaxaMensal();
 
-	float calculaValorRendimentoBruto();
+	double calculaValorRendimentoBruto();
 
-	float getRendaBrutaCumulativa();
+	double getRendaBrutaCumulativa();
 
-	float calculaValorLiquidoCumulativo();
+	double getRendaLiquidaCumulativa();
+
+	double calculaValorLiquidoCumulativo();
 
 	short getPrazoEmMeses();
 

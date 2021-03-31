@@ -13,11 +13,11 @@ public:
 
 	Periodo(struct tm first, struct tm second);
 
-	long int getYears();
+	short getYears();
 
-	long int getMonths();
+	short getMonths();
 
-	long int getWorkingDays();
+	short getWorkingDays();
 
 	time_t getBegin();
 
@@ -28,9 +28,9 @@ private:
 	time_t first;
 	time_t second;
 
-	long int years;
-	long int months;
-	long int workingDays;
+	short years;
+	short months;
+	short workingDays;
 
 	void calculateDiff();
 };

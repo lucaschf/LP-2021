@@ -131,6 +131,15 @@ public:
 	static double toDouble(const string source);
 
 	/**
+	 * Retrieves the float value contained in the string.
+	 *
+	 * @param source the string containing the value.
+	 * @return the parsed value.
+	 */
+	static float toFloat(const string source);
+
+
+	/**
 	  * Retrieves the int value contained in the string.
 	 *
 	 * @param source the string containing the value.
@@ -138,7 +147,7 @@ public:
 	 */
 	static int toInt(const string source);
 
-	static struct tm toTime(const string& source, int hora);
+	static struct tm toTime(const string& source);
 };
 
 #endif //STRING_UTILS_H

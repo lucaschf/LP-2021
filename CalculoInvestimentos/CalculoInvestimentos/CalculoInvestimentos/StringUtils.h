@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <iomanip>
 
 #include<time.h>
 
@@ -24,6 +25,28 @@ public:
 
 		out.precision(n);
 		out << std::fixed << a_value;
+
+		return out.str();
+	}
+	
+	template <typename T>
+	static string toBrazilianCurrency(const T a_value)
+	{
+		return "R$ " + toStringWithPrecision(a_value);
+	}
+	
+	template <typename T>
+	static string toPercentageString(const T a_value)
+	{
+		return toStringWithPrecision(a_value) + "%";
+	}
+	
+	static inline string toRow(string first, string second, int width = 30)
+	{
+		ostringstream out;
+
+		out << setw(width) << left << first;
+		out << setw(width) << left << second;
 
 		return out.str();
 	}

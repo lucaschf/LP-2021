@@ -10,18 +10,23 @@ class CalculoInvestimentos
 {
 public:
 
-	void obterInvestimentos(string caminhoArquivo);
+	int menu();
 
 	~CalculoInvestimentos();
 
-	vector<string> relatorioPorTipoInvestimento();
-
 private:
+
+	void obterInvestimentos(string caminhoArquivo);
+
+	void relatorioPorTipoInvestimento();
+
+	void relatorioPorEstrategia();
 
 	vector<Investimento*> investimentos;
 
 	void clearInvestimentos();
 
+	void importaDados();
 };
 
 #endif // !CALCULO_INVESTIMENTOS_H

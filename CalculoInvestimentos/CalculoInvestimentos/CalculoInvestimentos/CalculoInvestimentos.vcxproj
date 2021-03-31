@@ -159,7 +159,6 @@
     <ClCompile Include="Imposto.cpp" />
     <ClCompile Include="Investimento.cpp" />
     <ClCompile Include="InvestimentoFactory.cpp" />
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="RendaFixa.cpp" />
     <ClCompile Include="RendaVariavel.cpp" />
     <ClCompile Include="StringUtils.cpp" />

@@ -44,6 +44,12 @@ public:
      */
 	bool escrever(wstring conteudo);
 
+	/* Escreve no arquivo texto o conteúdo do objeto string usando a codificação UTF-8.
+       A escrita sempre ocorre no fim do arquivo.
+       Retorna true se a operação foi realizada com sucesso e false caso contrário.
+     */
+	bool escrever(string str);
+
 	/* Escreve no arquivo texto o conteúdo do objeto string usando a codificação especificada, p. ex., ".1252".
 	   A escrita sempre ocorre no fim do arquivo.
 	   Retorna true se a operação foi realizada com sucesso e false caso contrário.
@@ -70,7 +76,7 @@ public:
 	// Fecha o arquivo texto.
 	void fechar();
 
-	vector<string> readAll(const char* codificacao);
+	vector<string> readAll(const char* codificacao = ".UTF8");
 
 private:
 	string nomeArquivo;

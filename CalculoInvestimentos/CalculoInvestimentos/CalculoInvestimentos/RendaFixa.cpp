@@ -37,7 +37,23 @@ RendaFixa::RendaFixa(
 
 string RendaFixa::toSring()
 {
-	return Investimento::toSring();
+	auto intervalo = getIntervaloInvestimento();
+
+	string append = "Prazo: ";
+
+	if (intervalo.getYears() > 0) {
+		append += to_string(intervalo.getYears()) + " anos";
+	}
+	else {
+		append += to_string(intervalo.getMonths()) + " meses";
+	}
+
+	auto test = intervalo.getMonths() % 12;
+	if (test != 0) {
+		append += " e " + to_string(test) + " meses";
+	}
+
+	return Investimento::toSring() + " | " + append;
 }
 
 short RendaFixa::getPrazo()

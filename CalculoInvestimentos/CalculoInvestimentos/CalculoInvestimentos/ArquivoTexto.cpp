@@ -1,6 +1,7 @@
 #include <iostream>
 #include <locale>
 #include "ArquivoTexto.h"
+#include <algorithm>
 
 // Fecha o arquivo texto antes do objeto ser removido da memória.
 ArquivoTexto::~ArquivoTexto() 
@@ -44,7 +45,17 @@ bool ArquivoTexto::abrir(string nomeArquivo, TipoDeAcesso tipoDeAcesso)
 bool ArquivoTexto::escrever(wstring conteudo) 
 {
 	return escrever(conteudo, ".UTF8");
-} 
+}
+
+bool ArquivoTexto::escrever(string str)
+{
+	std::wstring wstr(str.length(), L' '); // Make room for characters
+
+   // Copy string to wstring.
+	std::copy(str.begin(), str.end(), wstr.begin());
+
+	return escrever(wstr);
+}
 
 /* Escreve no arquivo texto o conteúdo do objeto string usando a codificação especificada, p. ex., ".1252".
    A escrita sempre ocorre no fim do arquivo.
@@ -148,7 +159,7 @@ vector<string> ArquivoTexto::readAll(const char* codificacao)
 	// Cria um objeto locale com a codificação especificada.
 	const locale local(codificacao);
 
-	// Define o locale do arquivo.
+	// Define o locale do arquivo. 
 	inputFile.imbue(local);
 
 	inputFile.seekg(0);

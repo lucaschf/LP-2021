@@ -49,7 +49,7 @@ time_t Periodo::getBegin()
 
 time_t Periodo::getEnd()
 {
-	return this->second;
+	return this->second - 24 * 3600;
 }
 
 void Periodo::calculateDiff()

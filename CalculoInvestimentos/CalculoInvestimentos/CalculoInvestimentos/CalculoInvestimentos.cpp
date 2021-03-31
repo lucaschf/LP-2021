@@ -3,6 +3,7 @@
 #include "Constantes.h"
 #include "InvestimentoFactory.h"
 #include "StringUtils.h"
+#include <iomanip>
 
 void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 {
@@ -13,7 +14,7 @@ void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 	if (!arq.abrir(caminhoArquivo, TipoDeAcesso::LEITURA))
 		throw INCAPAZ_DE_ABRIR_ARQUIVO;
 
-	auto data = arq.readAll(".UTF8");
+	auto data = arq.readAll();
 	arq.fechar();
 
 	if (data.empty())
@@ -21,7 +22,7 @@ void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 
 	for (unsigned int i = 0; i < data.size(); i++) {
 		auto line = data.at(i);
-	
+
 		auto tokens = StringUtils::tokenize(line, ';', true);
 		if (tokens.size() != 9) {
 			clearInvestimentos();
@@ -54,6 +55,186 @@ void CalculoInvestimentos::obterInvestimentos(string caminhoArquivo)
 	}
 }
 
+void CalculoInvestimentos::relatorioPorTipoInvestimento()
+{
+	ArquivoTexto arq;
+
+	if (investimentos.empty())
+		throw string("Nenhum dado encontrado");
+
+	if (!arq.abrir("Investimentos.rel", TipoDeAcesso::ESCRITA)) {
+		throw string("Falha ao gerar arquivo de relatório");
+	}
+
+	auto comparator = [](Investimento* i, Investimento* another) {
+		return i->getType().compare(another->getType()) < 0;
+	};
+
+	sort(investimentos.begin(), investimentos.end(), comparator);
+
+	string strReport;
+
+	int i = 0;
+	string type = "";
+
+	for (auto investiment : investimentos) {
+		auto t = investiment->getType();
+
+		if (t != type) {
+			type = t;
+			strReport.append("\n" + to_string(++i) + ". Renda: " + (t == "RF" ? "Fixa" : "Variável") + "\n\n");
+		}
+
+		strReport.append("- " + investiment->toSring() + "\n")
+			.append(
+				StringUtils::toRow(
+					"\n\tValor investido:",
+					StringUtils::toBrazilianCurrency(investiment->getValorInvestido()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tTaxa ao ano:",
+					StringUtils::toPercentageString(investiment->getTaxa()) + " a.a.")
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tTaxa ao mês:",
+					StringUtils::toPercentageString(investiment->getTaxaMensal() * 100.0) + " a.m.")
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tData do investimento:",
+					investiment->getDataInvestimento())
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tData de resgate:",
+					investiment->getDataResgate())
+			)
+			.append(StringUtils::toRow(
+				"\n\tValor bruto:",
+				StringUtils::toBrazilianCurrency(investiment->calculaValorRendimentoBruto()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tValor líquido:",
+					StringUtils::toBrazilianCurrency(investiment->calculaValorLiquidoCumulativo()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tAliquota de IR:",
+					StringUtils::toPercentageString(investiment->getAliquota()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tValor do IR:",
+					StringUtils::toBrazilianCurrency(investiment->calcularIR()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tRendimento bruto:",
+					StringUtils::toBrazilianCurrency(investiment->getRendaBrutaCumulativa()))
+			)
+			.append(
+				StringUtils::toRow(
+					"\n\tRendimento líquido:",
+					StringUtils::toBrazilianCurrency(investiment->getRendaLiquidaCumulativa())
+				)
+			).append("\n\n");
+	}
+
+	auto success = arq.escrever(strReport);
+	arq.fechar();
+
+	if (!success)
+		throw("Falha ao gravar dados");
+}
+
+void CalculoInvestimentos::relatorioPorEstrategia()
+{
+	auto comparator = [](Investimento* i, Investimento* another) {
+		return i->getEstrategia().getEstrategia() < another->getEstrategia().getEstrategia();
+	};
+
+	sort(investimentos.begin(), investimentos.end(), comparator);
+
+	int width = 20;
+
+	EstrategiaInvestimento estrategia = EstrategiaInvestimento::INFLACAO;
+	int i = 0;
+
+	for (auto investiment : investimentos) {
+		auto e = investiment->getEstrategia().getEstrategia();
+
+		if (e != estrategia || i == 0) {
+			estrategia = e;
+			std::cout << endl << to_string(++i) + ". Estratégia: " + Estrategia::obterEstrategia(estrategia) << endl << endl;
+		}
+
+		std::cout << "- " << investiment->getNome() << endl << endl;
+		std::cout << "\t";
+		std::cout << setw(width) << left << "Valor investido";
+		std::cout << setw(width) << left << "Valor bruto";
+		std::cout << setw(width) << left << "Valor líquido";
+		std::cout << setw(width) << left << "Rendimento bruto";
+		std::cout << setw(width) << left << "Rentabilidade\n";
+		std::cout << "\t";
+		std::cout << setw(width) << left << StringUtils::toBrazilianCurrency(investiment->getValorInvestido());
+		std::cout << setw(width) << left << StringUtils::toBrazilianCurrency(investiment->calculaValorRendimentoBruto());
+		std::cout << setw(width) << left << StringUtils::toBrazilianCurrency(investiment->calculaValorLiquidoCumulativo());
+		std::cout << setw(width) << left << StringUtils::toBrazilianCurrency(investiment->getRendaBrutaCumulativa());
+		std::cout << setw(width) << left << StringUtils::toPercentageString(investiment->getRentabilidadeToDisplay());
+		std::cout << endl << endl;
+	}
+}
+
+int CalculoInvestimentos::menu()
+{
+	int choice;
+
+	do {
+		cout << "Cálculo de investimentos ========= \n\n";
+		string strChoice;
+		cout << "1. Importar dados\n2. Relatorio por tipo\n3. Relatório por estratégia\n4. Sair\n\nOpção: ";
+
+		getline(cin, strChoice);
+
+		choice = atoi(strChoice.c_str());
+
+		switch (choice)
+		{
+		case 1:
+			importaDados();
+			break;
+
+		case 2:
+			cout << "\nRelatório de investimentos por tipo >>\n\n";
+			try {
+				relatorioPorTipoInvestimento();
+				cout << "Relatorio gerado com sucesso.\n\n";
+			}
+			catch (string ex) {
+				cout << ex << endl << endl;
+			}
+			break;
+
+		case 3:
+			cout << "\nRelatório de investimentos por estratégia >>\n\n";
+			if (investimentos.empty()) {
+				cout << "Nenhum dado encontrado\n\n";
+			}
+			else
+				relatorioPorEstrategia();
+			break;
+		default:
+			cout << "\n";
+			break;
+		}
+	} while (choice != 4);
+
+	return 0;
+}
+
 CalculoInvestimentos::~CalculoInvestimentos()
 {
 	clearInvestimentos();
@@ -68,34 +249,28 @@ void CalculoInvestimentos::clearInvestimentos()
 	investimentos.clear();
 }
 
-vector<string> CalculoInvestimentos::relatorioPorTipoInvestimento()
+void CalculoInvestimentos::importaDados()
 {
-	vector<string> report;
+	string path;
 
-	auto comparator = [](Investimento* i, Investimento* another) {
-		return i->getType().compare(another->getType()) < 0;
-	};
+	cout << "\nImportação de dados >> \n";
 
-	sort(investimentos.begin(), investimentos.end(), comparator);
+	do {
+		cout << endl << "Caminho do arquivo de investimentos: ";
 
-	for (auto investiment : investimentos) {
-		report.emplace_back("- " + investiment->toSring());
-		report.emplace_back("Valor investido:\tR$ " + StringUtils::toStringWithPrecision(investiment->getValorInvestido()));
-		report.emplace_back("Taxa ao ano:\t" + StringUtils::toStringWithPrecision(investiment->getTaxa()) +"% a.a.");
-		report.emplace_back("Taxa ao mês:\t" + StringUtils::toStringWithPrecision(investiment->getTaxaMensal() * 100.0) + "% a.m.");
-		report.emplace_back("Data do investimento:\t" + investiment->getDataInvestimento());
-		report.emplace_back("Data de resgate:\t" + investiment->getDataResgate());
-		report.emplace_back("Valor bruto:\tR$ " + StringUtils::toStringWithPrecision(investiment->calculaValorRendimentoBruto()));
-		report.emplace_back("Valor líquido:\tR$ " + StringUtils::toStringWithPrecision(investiment->calculaValorLiquidoCumulativo()));
-		report.emplace_back("Aliquota de IR:\t" + StringUtils::toStringWithPrecision(investiment->getAliquota()) + "%");
-		report.emplace_back("Valor do IR:\tR$ " + StringUtils::toStringWithPrecision(investiment->calcularIR()));
-		report.emplace_back("Rendimento bruto:\tR$ " + StringUtils::toStringWithPrecision(investiment->getRendaBrutaCumulativa()));
-		report.emplace_back("Rendimento líquido:\tR$ " + StringUtils::toStringWithPrecision(investiment->getRendaLiquidaCumulativa()));
+		getline(cin, path);
 
-		report.emplace_back("\n\n");
-	}
-
-	return report;
+		try {
+			obterInvestimentos(path);
+			cout << endl << investimentos.size() << " investimentos importados\n\n";
+		}
+		catch (string ex) {
+			cout << endl << "Falha na importação: " <<    ex << endl << endl;
+		}
+	} while (path.empty());
 }
 
-
+int main() {
+	setlocale(LC_ALL, "pt-Br");
+	return CalculoInvestimentos().menu();
+}

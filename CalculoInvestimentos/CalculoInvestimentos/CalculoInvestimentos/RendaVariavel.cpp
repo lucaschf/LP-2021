@@ -37,7 +37,18 @@ RendaVariavel::RendaVariavel(
 
 string RendaVariavel::toSring()
 {
-	return Investimento::toSring() + " | " + to_string(getPrazo()) + " dias";
+	auto intervalo = getIntervaloInvestimento();
+
+	string append = "Prazo: ";
+
+	if (intervalo.getYears() > 0) {
+		append += to_string(intervalo.getYears()) + " anos";
+	}
+	else {
+		append += to_string(intervalo.getWorkingDays()) + " dias";
+	}
+
+	return Investimento::toSring() + " | " + append;
 }
 
 short RendaVariavel::getPrazo()

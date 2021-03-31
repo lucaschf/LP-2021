@@ -199,6 +199,16 @@ double Investimento::calculaValorLiquidoCumulativo()
 	return calculaValorRendimentoBruto() - calcularIR();
 }
 
+double Investimento::getRentabilidade()
+{
+	return getRendaBrutaCumulativa() / getValorInvestido();
+}
+
+double Investimento::getRentabilidadeToDisplay()
+{
+	return getRentabilidade() * 100;
+}
+
 short Investimento::getPrazoEmMeses()
 {
 	return intervaloInvestimento.getMonths();

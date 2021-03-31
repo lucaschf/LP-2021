@@ -95,11 +95,17 @@ public:
 
 	double calculaValorLiquidoCumulativo();
 
+	double getRentabilidade();
+
+	double getRentabilidadeToDisplay();
+
 	short getPrazoEmMeses();
 
 	Periodo getIntervaloInvestimento() const;
 
-	virtual float getAliquota() = 0;
+	virtual float getAliquota() {
+		return 0.0f;
+	};
 
 	string getType();
 

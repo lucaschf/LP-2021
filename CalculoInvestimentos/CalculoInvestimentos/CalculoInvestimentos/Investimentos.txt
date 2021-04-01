@@ -1,2 +1,0 @@
-RF;Pós-fixado;CDB Original Jan/2026;AAA;sim;2000;10%;14/01/2021;14/01/2026
-RV;Multimercado;Western Asset FIM;A;não;4000;58%;15/01/2021;15/12/2021
